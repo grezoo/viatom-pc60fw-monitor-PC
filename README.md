@@ -1,12 +1,21 @@
 # Viatom PC-60FW Bedside ICU & Overnight Sleep Analysis Monitor
 
+<p align="left">
+  <a href="https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest">
+    <img src="https://img.shields.io/badge/Download-Release%20v1.0.0%20(ZIP)-00e5ff?style=for-the-badge&logo=windows&logoColor=white" alt="Download Release v1.0.0">
+  </a>
+  <a href="https://revolut.me/grezoo">
+    <img src="https://img.shields.io/badge/Donate-Revolut%20%40grezoo-0075eb?style=for-the-badge&logo=revolut&logoColor=white" alt="Revolut Donate">
+  </a>
+</p>
+
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
 [![WebSockets](https://img.shields.io/badge/Streaming-WebSockets-orange.svg)](https://websockets.readthedocs.io/)
 [![Bleak BLE](https://img.shields.io/badge/Bluetooth-Bleak%20WinRT-darkblue.svg)](https://github.com/hbldh/bleak)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6.svg)](https://microsoft.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Revolut Donate](https://img.shields.io/badge/Donate-Revolut%20%40grezoo-0075eb.svg)](https://revolut.me/grezoo)
+[![GitHub Releases](https://img.shields.io/github/v/release/grezoo/viatom-pc60fw-monitor-PC?color=00e5ff&label=Latest%20Release)](https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest)
 
 > **English documentation is followed by the Hungarian version below.**  
 > *(A magyar nyelvű részletes leírás a dokumentáció második felében található.)*
@@ -94,7 +103,7 @@ The system transforms a consumer medical sensor into a full-scale clinical telem
 ### 🚀 Quick Start (English)
 
 #### Option 1: Native Windows Launcher (Recommended)
-1. Clone or download this repository.
+1. Download the latest release: [**`Viatom_Monitor_v1.0.0.zip`**](https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest) and extract it anywhere on your Windows PC.
 2. Double-click **`Viatom_Monitor.exe`**.
 3. The launcher will automatically spin up the background telemetry service and open `http://localhost:8000` in your default browser.
 
@@ -192,7 +201,7 @@ A szoftver objektív, másodperces és 60 Hz-es felbontású adatokkal vizsgálj
 
 ### 🚀 Gyors Indítás (Magyar)
 
-1. Töltse le vagy klónozza ezt a repót.
+1. Töltse le a kész, azonnal futtatható csomagot a Releases oldalról: [**`Viatom_Monitor_v1.0.0.zip`**](https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest) és csomagolja ki bárhová.
 2. Kattintson duplán a **`Viatom_Monitor.exe`** fájlra.
 3. Helyezze a mérőcsipeszt az ujjára. A monitor másodperceken belül megjeleníti az élő keringési adatokat a böngészőben.
 

@@ -15,5 +15,6 @@ device_cache.json
 # Build & OS Temporary files
 *.tmp
 *.log
+*.zip
 .vscode/
 .idea/
