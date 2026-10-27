@@ -1,0 +1,19 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+venv/
+env/
+runtime/
+
+# User Private & Sensitive Data (Health metrics & hardware MAC)
+meresi_naplo.csv
+device_cache.json
+
+# Build & OS Temporary files
+*.tmp
+*.log
+.vscode/
+.idea/
