@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.ViatomMonitor" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:windowBackground">#000000</item>
+        <item name="android:colorBackground">#000000</item>
+        <item name="android:statusBarColor">#07090c</item>
+        <item name="android:navigationBarColor">#07090c</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+</resources>

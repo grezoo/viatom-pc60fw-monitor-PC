@@ -123,6 +123,12 @@ The system transforms a consumer medical sensor into a full-scale clinical telem
    ```
 4. Navigate to `http://localhost:8000` in your web browser.
 
+#### Option 3: Android Standalone Mobile App (.APK)
+1. Download **`Viatom_Monitor_Android_v1.0.0.apk`** from [Releases](https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest).
+2. Install the APK on your Android device (Android 8.0+ / Android 14 supported).
+3. Place the sensor clip on your finger and tap **Bluetooth Connect**.
+4. Includes **Foreground Service & WakeLock** for uninterrupted overnight recording with screen locked, in-app history replay, and one-tap CSV sharing (Google Drive, Gmail, Excel).
+
 ---
 
 ### 📊 Telemetry Data & CSV Logging
@@ -201,9 +207,16 @@ A szoftver objektív, másodperces és 60 Hz-es felbontású adatokkal vizsgálj
 
 ### 🚀 Gyors Indítás (Magyar)
 
-1. Töltse le a kész, azonnal futtatható csomagot a Releases oldalról: [**`Viatom_Monitor_v1.0.0.zip`**](https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest) és csomagolja ki bárhová.
+#### 1. PC: Windows Hordozható Futtató
+1. Töltse le a kész csomagot: [**`Viatom_Monitor_v1.0.0.zip`**](https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest) és csomagolja ki bárhová.
 2. Kattintson duplán a **`Viatom_Monitor.exe`** fájlra.
 3. Helyezze a mérőcsipeszt az ujjára. A monitor másodperceken belül megjeleníti az élő keringési adatokat a böngészőben.
+
+#### 2. Mobil: Android Standalone App (.APK)
+1. Töltse le a **`Viatom_Monitor_Android_v1.0.0.apk`** fájlt a [Releases oldalról](https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest).
+2. Telepítse az Androidos telefonjára (Android 8.0+ / Android 14 támogatott).
+3. Helyezze fel a csipeszt az ujjára és nyomja meg a **Bluetooth Kapcsolódás** gombot.
+4. **Alvásbarát háttérfolyamat (Foreground Service + WakeLock)**: Képernyőzár mellett sem alszik el a telefon, ébredésig folyamatosan ment minden másodpercet (SpO2, Pulzus, PI%), tartalmazza a korábbi éjszakák visszanézését és egy-kattintásos CSV megosztását (Google Drive, Excel, Gmail)!
 
 ---
 
