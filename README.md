@@ -2,18 +2,23 @@
 
 <p align="left">
   <a href="https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Release%20v1.0.0%20(ZIP)-00e5ff?style=for-the-badge&logo=windows&logoColor=white" alt="Download Release v1.0.0">
+    <img src="https://img.shields.io/badge/Download-Android%20APK%20(v1.0.0)-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Download Android APK">
+  </a>
+  <a href="https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest">
+    <img src="https://img.shields.io/badge/Download-Windows%20PC%20(v1.0.0)-00e5ff?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows PC">
   </a>
   <a href="https://revolut.me/grezoo">
     <img src="https://img.shields.io/badge/Donate-Revolut%20%40grezoo-0075eb?style=for-the-badge&logo=revolut&logoColor=white" alt="Revolut Donate">
   </a>
 </p>
 
+[![Android 8.0+ | 14](https://img.shields.io/badge/Platform-Android%208.0%2B%20%7C%2014-3DDC84.svg?logo=android&logoColor=white)](https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest)
+[![Windows 10 / 11](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6.svg?logo=windows&logoColor=white)](https://microsoft.com)
+[![ViHealth Alternative](https://img.shields.io/badge/ViHealth-Full%20CSV%20Alternative-brightgreen.svg)](https://github.com/grezoo/viatom-pc60fw-monitor-PC)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
 [![WebSockets](https://img.shields.io/badge/Streaming-WebSockets-orange.svg)](https://websockets.readthedocs.io/)
 [![Bleak BLE](https://img.shields.io/badge/Bluetooth-Bleak%20WinRT-darkblue.svg)](https://github.com/hbldh/bleak)
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D6.svg)](https://microsoft.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![GitHub Releases](https://img.shields.io/github/v/release/grezoo/viatom-pc60fw-monitor-PC?color=00e5ff&label=Latest%20Release)](https://github.com/grezoo/viatom-pc60fw-monitor-PC/releases/latest)
 
@@ -33,6 +38,35 @@
 A hospital-grade, real-time bedside telemetry workstation, overnight sleep apnea analyzer, and peripheral microcirculation monitor engineered specifically for the **Viatom / Lepu PC-60FW** wireless Bluetooth pulse oximeter.
 
 The system transforms a consumer medical sensor into a full-scale clinical telemetry station, featuring high-speed optical waveform rendering, real-time cardiac arrhythmia detection, AASM-standard oxygen desaturation indexing, and acoustic hypoperfusion warnings for sleep-induced numbness or vascular entrapment syndromes.
+
+---
+
+### 🏆 Superior Open-Source Alternative to ViHealth / Factory Apps
+
+If you purchased a Viatom, Lepu, or Wellue pulse oximeter, you may have experienced the severe limitations of the proprietary **ViHealth** app: truncated or averaged 1-minute data points, no raw second-by-second Perfusion Index (PI%) CSV export, no full session replay, and aggressive sleep-mode OS task killing that interrupts overnight sleep apnea logs.
+
+**Viatom Bedside ICU Monitor** was built as a zero-compromise, open-source medical telemetry workstation:
+
+| Feature / Metric | Proprietary ViHealth App | 🚀 Viatom Bedside ICU Monitor (This Project) |
+| :--- | :---: | :---: |
+| **Sampling & Logging Resolution** | 1-minute averaged downsampling | **1-second raw telemetry logging** (1 Hz SpO2, PR, PI%) |
+| **Perfusion Index (PI%) Resolution** | Coarse integer or hidden | **Exact 0.1% decimal float** (e.g. 0.8%, 1.2%, 4.5%) |
+| **Photoplethysmogram (PPG) Waveform** | Low-res 20 FPS, clipping on movement | **60 FPS Smooth Canvas** with Adaptive AGC Headroom |
+| **Cardiac Arrhythmia Magnifier HUD** | ❌ None | **✅ 3-Cycle Auto-Latch HUD** with 12s freeze countdown |
+| **AASM Sleep Apnea Analysis (ODI)** | Coarse summary score | **✅ Real-time ODI-3% & absolute (<91%) desaturations** |
+| **Peripheral Numbness & Vasospasm Alert** | ❌ None | **✅ Hypoperfusion acoustic warning** ($\text{PI} < 0.8\%$) |
+| **Overnight WakeLock & Background Service** | ⚠️ Frequently killed by Android OEM battery savers | **✅ Foreground Service with Partial WakeLock** (Zero data drops) |
+| **Data Ownership & Export** | Locked proprietary cloud / PDF summaries | **✅ 100% Local CSV file export & Instant Replay** |
+| **Cross-Platform Availability** | Mobile only (Android / iOS) | **✅ Windows PC (Zero-Install EXE) + Standalone Android APK** |
+
+---
+
+### 🩺 Supported Hardware & Rebrands
+The underlying BLE telemetry protocol (`0xAA 0x55` Nordic UART packet framing) is shared across multiple OEM brands manufactured by **Shenzhen Creative Industry Co., Ltd. / Lepu Medical**. This software is fully plug-and-play compatible with:
+* **Viatom PC-60FW** (Bluetooth Fingertip Oximeter)
+* **Lepu Medical PC-60FW**
+* **Creative Medical PC-60FW / PC-60E / PC-60NW**
+* **Wellue PC-60FW & POD-2**
 
 ---
 
@@ -167,6 +201,35 @@ If this open-source project assisted your sleep apnea research, circulation diag
 A **Viatom PC-60FW Bedside ICU & Overnight Sleep Analysis Monitor** egy professzionális, orvosi műszerfal minőségű telemetriás és adatgyűjtő rendszer a **Viatom / Lepu PC-60FW** vezeték nélküli Bluetooth pulzoximéterhez.
 
 A szoftver objektív, másodperces és 60 Hz-es felbontású adatokkal vizsgálja a **perifériás mikrokeringést (Perfúziós Index - PI%)**, az **artériás véroxigén-telítettséget (SpO2)**, a **szívfrekvenciát (BPM)** és a **fotopletizmogram (PPG) pulzushullámot**.
+
+---
+
+### 🏆 Nyílt Forráskódú Alternatíva a Gyári ViHealth Helyett
+
+A gyári **ViHealth** mobilalkalmazás gyakori hátránya, hogy perces átlagolással butítja le a mérési adatokat, nem naplózza másodperces pontossággal a Perfúziós Indexet (PI%), nem teszi lehetővé a teljes éjszakai visszanézést (Replay), és a telefon energiatakarékos módjában a háttérfolyamatot gyakran lelövi az operációs rendszer.
+
+Ez a projekt egy professzionális, teljes értékű telemetriás munkaállomást ad a kezedbe:
+
+| Funkció / Képesség | Gyári ViHealth App | 🚀 Viatom Bedside ICU Monitor (Ez a Projekt) |
+| :--- | :---: | :---: |
+| **Adatmentési felbontás** | 1 perces átlagolt tömörítés | **Másodpercenkénti (1 Hz) valós idejű naplózás** |
+| **Perfúziós Index (PI%) pontosság** | Durva vagy rejtett érték | **Tizedespontos lebegőpontos érték** (pl. 0.8%, 1.2%) |
+| **PPG Pulzushullám rajzolás** | Lassú (~20 FPS), vágja a hullámcsúcsokat | **60 FPS simított Canvas** Dinamikus AGC erősítéssel |
+| **Aritmia Nagyító HUD** | ❌ Nincs | **✅ 3-Ciklusos Automata Rögzítés** 12 mp számlálóval |
+| **AASM Alvási Apnoé Index (ODI)** | Zárt, egyszerűsített pontszám | **✅ Valós idejű ODI-3% és deszaturációs analitika** |
+| **Zsibbadás & Érszűkület riasztás** | ❌ Nincs | **✅ Hangjelzés alacsony keringésnél** ($\text{PI} < 0.8\%$) |
+| **Éjszakai Háttérfolyamat (WakeLock)** | ⚠️ Energiatakarékos mód gyakran leállítja | **✅ Foreground Service + WakeLock** (0 adatvesztés) |
+| **Adathozzáférés és Exportálás** | Zárt felhő / PDF jelentés | **✅ 100% Nyílt CSV export és azonnali visszanézés** |
+| **Támogatott platformok** | Csak mobil (Android/iOS) | **✅ Windows PC (Nulla telepítésű EXE) + Android APK** |
+
+---
+
+### 🩺 Támogatott Eszközök és Átmárkázott Típusok
+A beépített Bluetooth LE kommunikáció kompatibilis a **Shenzhen Creative Industry Co., Ltd. / Lepu Medical** által gyártott összes azonos protokollú oximéterrel:
+* **Viatom PC-60FW**
+* **Lepu Medical PC-60FW**
+* **Creative Medical PC-60FW / PC-60E / PC-60NW**
+* **Wellue PC-60FW & POD-2**
 
 ---
 
