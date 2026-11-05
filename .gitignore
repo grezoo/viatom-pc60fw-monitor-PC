@@ -16,5 +16,6 @@ device_cache.json
 *.tmp
 *.log
 *.zip
+release-apk/
 .vscode/
 .idea/
