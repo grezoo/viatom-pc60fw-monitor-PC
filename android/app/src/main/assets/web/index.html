@@ -919,10 +919,10 @@
             state.savedName = data.saved_device_name || "";
             state.savedMac = data.saved_device_address || "";
             state.statusMsg = data.ble_status_msg || "";
-            state.spo2 = data.spo2;
-            state.pulse = data.pulse;
-            state.pi = data.pi;
-            state.fingerIn = data.finger_in;
+            state.spo2 = (data.spo2 !== null && data.spo2 !== undefined) ? data.spo2 : null;
+            state.pulse = (data.pulse !== null && data.pulse !== undefined) ? data.pulse : null;
+            state.pi = (data.pi !== null && data.pi !== undefined && !isNaN(data.pi)) ? Number(data.pi) : null;
+            state.fingerIn = Boolean(data.finger_in);
             state.recording = data.recording;
             state.recordSeconds = data.record_seconds || 0;
             state.numbEpisodes = data.numb_episodes || 0;
@@ -972,7 +972,8 @@
             // Nagy orvosi számok
             document.getElementById('valSpo2').innerText = state.spo2 !== null ? state.spo2 : "--";
             document.getElementById('valPulse').innerText = state.pulse !== null ? state.pulse : "--";
-            document.getElementById('valPi').innerText = state.pi !== null ? state.pi.toFixed(1) : "--";
+            const hasPi = state.pi !== null && !isNaN(state.pi);
+            document.getElementById('valPi').innerText = hasPi ? state.pi.toFixed(1) : "--";
 
             // Zsibbadás riasztás (<0.8%)
             const cardPi = document.getElementById('cardPi');

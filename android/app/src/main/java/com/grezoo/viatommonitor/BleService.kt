@@ -521,19 +521,21 @@ class BleService : Service() {
             if (token == 0x0F && pkt.size >= 5) {
                 val subId = pkt[4].toInt() and 0xFF
 
-                // SUB-ID 0x01: Numerikus Értékek
-                if (subId == 0x01 && pkt.size >= 9) {
+                // SUB-ID 0x01: Numerikus Értékek (SpO2, Pulzus, PI)
+                if (subId == 0x01 && pkt.size >= 7) {
                     val s = pkt[5].toInt() and 0xFF
                     val p = pkt[6].toInt() and 0xFF
-                    val piRaw = pkt[7].toInt() and 0xFF
-                    val status = pkt[8].toInt() and 0xFF
+                    val piByte = if (pkt.size > 8) (pkt[8].toInt() and 0xFF) else 0xFF
+                    val pIndex = if (piByte != 0xFF && piByte > 0) (piByte / 10.0f) else 0.0f
 
-                    isFingerIn = (status and 0x01) == 0
+                    // Csipesz ujj érzékelés: ha nincs ujj a csipeszben, 0xFF vagy 0 érkezik
+                    val finger = !(s == 0xFF || s == 0 || p == 0xFF || p == 0)
+                    isFingerIn = finger
 
-                    if (isFingerIn) {
+                    if (finger) {
                         currentSpo2 = if (s in 35..100) s else null
                         currentPulse = if (p in 25..250) p else null
-                        currentPi = piRaw / 10.0f
+                        currentPi = pIndex
 
                         // Apnoé feldolgozás (AASM)
                         currentSpo2?.let { spo2Val ->
@@ -588,19 +590,32 @@ class BleService : Service() {
                         updateNotification("Ujj kihúzva a csipeszből")
                     }
                 }
-                // SUB-ID 0x03: Hullámforma Pont (PPG)
-                else if (subId == 0x03 && pkt.size >= 6) {
-                    lastWaveAmp = pkt[5].toInt() and 0xFF
-                    isBeatEvent = (lastWaveAmp and 0x80) != 0
-                    lastWaveAmp = lastWaveAmp and 0x7F
+                // SUB-ID 0x02 vagy 0x03: Hullámforma Minták (PPG)
+                else if ((subId == 0x02 || subId == 0x03) && pkt.size >= 6) {
+                    if (subId == 0x02 && pkt.size > 6) {
+                        for (i in 5 until pkt.size - 1) {
+                            val rawS = pkt[i].toInt() and 0xFF
+                            val isBeat = (rawS and 0x80) != 0
+                            val amp = rawS and 0x7F
+                            val waveJson = JSONObject().apply {
+                                put("type", "wave")
+                                put("wave", amp)
+                                put("beat", isBeat)
+                            }
+                            onTelemetryListener?.invoke(waveJson)
+                        }
+                    } else {
+                        lastWaveAmp = pkt[5].toInt() and 0xFF
+                        isBeatEvent = (lastWaveAmp and 0x80) != 0
+                        lastWaveAmp = lastWaveAmp and 0x7F
 
-                    // Azonnali PPG küldés a 60 FPS kirajzoláshoz
-                    val waveJson = JSONObject().apply {
-                        put("type", "wave")
-                        put("wave", lastWaveAmp)
-                        put("beat", isBeatEvent)
+                        val waveJson = JSONObject().apply {
+                            put("type", "wave")
+                            put("wave", lastWaveAmp)
+                            put("beat", isBeatEvent)
+                        }
+                        onTelemetryListener?.invoke(waveJson)
                     }
-                    onTelemetryListener?.invoke(waveJson)
                 }
             }
         }
