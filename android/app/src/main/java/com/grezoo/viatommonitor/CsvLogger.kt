@@ -16,6 +16,8 @@ class CsvLogger(private val context: Context) {
     }
 
     private var currentFile: File? = null
+    val currentCsvFile: File?
+        get() = currentFile
     private var writer: FileWriter? = null
     var isRecording: Boolean = false
         private set
@@ -67,6 +69,20 @@ class CsvLogger(private val context: Context) {
 
         writer?.append("$nowStr,$spo2Str,$pulseStr,$piStr,$status,$apneaStr,$arrStr\n")
         writer?.flush()
+    }
+
+    @Synchronized
+    fun logTelemetry(
+        spo2: Int?,
+        pulse: Int?,
+        pi: Float?,
+        fingerIn: Boolean,
+        isApnea: Boolean,
+        isNumb: Boolean,
+        isArrhythmia: Boolean = false
+    ) {
+        val status = if (fingerIn) "UJJ_A_CSIPESZBEN" else "CSIPESZ_LEVÉVE"
+        logSecond(spo2, pulse, pi, status, isApnea, isArrhythmia)
     }
 
     @Synchronized
