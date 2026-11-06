@@ -437,7 +437,7 @@ async def ble_worker():
         for addr, (d, adv) in discovered.items():
             name = (d.name or adv.local_name or "").upper()
             uuids = [str(u).lower() for u in (adv.service_uuids or [])]
-            if any(k in name for k in ["PC-60", "PC60", "VIATOM", "CREATIVE", "LEPU", "O2"]) or UART_SERVICE_UUID.lower() in uuids:
+            if any(k in name for k in ["PC-60", "PC60", "PC_60", "POD", "VIATOM", "CREATIVE", "LEPU", "WELLUE", "O2", "PULSE", "OXIMETER"]) or UART_SERVICE_UUID.lower() in uuids:
                 target_device = d
                 break
 

@@ -20,6 +20,26 @@ class WebAppInterface(
     }
 
     @JavascriptInterface
+    fun startScan() {
+        serviceProvider()?.startScan()
+    }
+
+    @JavascriptInterface
+    fun stopScan() {
+        serviceProvider()?.stopScan()
+    }
+
+    @JavascriptInterface
+    fun connectDevice(mac: String) {
+        serviceProvider()?.connectToAddress(mac)
+    }
+
+    @JavascriptInterface
+    fun forgetDevice() {
+        serviceProvider()?.forgetDevice()
+    }
+
+    @JavascriptInterface
     fun toggleRec(): String {
         val service = serviceProvider() ?: return "{}"
         val logger = service.csvLogger
@@ -71,6 +91,17 @@ class WebAppInterface(
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         context.startActivity(chooser)
+    }
+
+    @JavascriptInterface
+    fun shareLatestOrCurrentCsv() {
+        val service = serviceProvider() ?: return
+        val currentFile = service.csvLogger.currentCsvFile?.name
+        val latestSaved = service.csvLogger.listSessions().firstOrNull()?.fileName
+        val target = currentFile ?: latestSaved
+        if (target != null) {
+            shareSession(target)
+        }
     }
 
     @JavascriptInterface

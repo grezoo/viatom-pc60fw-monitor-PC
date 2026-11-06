@@ -2,6 +2,8 @@ package com.grezoo.viatommonitor
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -31,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             bleService = binder.getService()
             isServiceBound = true
 
-            // Telemetria küldése a WebView-nak
+            // Send live telemetry to WebView
             bleService?.onTelemetryListener = { json ->
                 runOnUiThread {
                     val script = "if (window.onAndroidTelemetry) { window.onAndroidTelemetry($json); }"
@@ -39,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            // Kezdő történet elküldése
+            // Send initial history
             bleService?.getHistoryPayload()?.let { hist ->
                 runOnUiThread {
                     val script = "if (window.onAndroidTelemetry) { window.onAndroidTelemetry($hist); }"
@@ -57,17 +59,31 @@ class MainActivity : AppCompatActivity() {
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val allGranted = permissions.entries.all { it.value }
-        if (allGranted) {
+        val scanGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissions[Manifest.permission.BLUETOOTH_SCAN] == true &&
+                    permissions[Manifest.permission.BLUETOOTH_CONNECT] == true
+        } else {
+            permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        }
+
+        if (scanGranted) {
+            checkBluetoothEnabledAndStart()
+        } else {
             startAndBindService()
         }
+    }
+
+    private val enableBtLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        startAndBindService()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Képernyő ébrentartása éjszakai monitor módban
+        // Keep screen awake for overnight monitoring
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         webView = WebView(this).apply {
@@ -106,9 +122,15 @@ class MainActivity : AppCompatActivity() {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                 permissionsToRequest.add(Manifest.permission.BLUETOOTH_CONNECT)
             }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
         } else {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.ACCESS_COARSE_LOCATION)
             }
         }
 
@@ -121,8 +143,20 @@ class MainActivity : AppCompatActivity() {
         if (permissionsToRequest.isNotEmpty()) {
             permissionLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
-            startAndBindService()
+            checkBluetoothEnabledAndStart()
         }
+    }
+
+    private fun checkBluetoothEnabledAndStart() {
+        val bm = getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
+        val adapter = bm?.adapter
+        if (adapter != null && !adapter.isEnabled) {
+            try {
+                enableBtLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+                return
+            } catch (_: Exception) {}
+        }
+        startAndBindService()
     }
 
     private fun startAndBindService() {

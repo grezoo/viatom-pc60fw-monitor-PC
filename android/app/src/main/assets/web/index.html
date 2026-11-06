@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIATOM PC-60FW ICU BEDSIDE MONITOR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Viatom ICU Mobile</title>
     <style>
         :root {
             --bg-black: #000000;
-            --panel-bg: #07090c;
-            --bezel-border: #161b22;
-            --neon-green: #00ff55;
-            --electric-cyan: #00e5ff;
-            --amber-gold: #ffb700;
-            --alert-red: #ff1744;
-            --text-dim: #6e7681;
-            --text-light: #c5d1d9;
+            --card-bg: #0d1219;
+            --card-border: #1a2230;
+            --card-hover: #141c28;
+            --cyan-glow: #00e5ff;
+            --green-glow: #00ff66;
+            --amber-glow: #ffb700;
+            --alert-red: #ff334b;
+            --text-dim: #7d8b9e;
+            --text-light: #e6edf3;
         }
 
         * {
@@ -22,2460 +23,1101 @@
             margin: 0;
             padding: 0;
             user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg-black);
-            color: #ffffff;
+            color: var(--text-light);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            overflow: hidden;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
+            padding-bottom: 90px; /* Space for bottom sticky bar */
         }
 
-        /* FELSŐ KÓRHÁZI VEZÉRLŐPULT */
-        .top-console {
-            background: linear-gradient(180deg, #181d24 0%, #0d1117 100%);
-            border-bottom: 2px solid #252d38;
-            padding: 8px 16px;
+        /* FELSŐ VEZÉRLŐSÁV */
+        .top-bar {
+            background: linear-gradient(180deg, #161c24 0%, #0d1219 100%);
+            border-bottom: 1px solid var(--card-border);
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-            z-index: 10;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .hospital-header {
+        .brand-zone {
             display: flex;
-            align-items: center;
-            gap: 14px;
+            flex-direction: column;
+            gap: 2px;
         }
 
-        .bed-badge {
-            background: #002b36;
-            border: 1px solid var(--electric-cyan);
-            color: var(--electric-cyan);
-            font-weight: 800;
+        .brand-title {
             font-size: 13px;
+            font-weight: 800;
             letter-spacing: 1.5px;
-            padding: 4px 10px;
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+            color: var(--cyan-glow);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .patient-title {
-            font-size: 14px;
-            color: #8b949e;
+        .device-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
             font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        /* GOMBOK ÉS VEZÉRLŐK */
-        .controls-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .tactile-btn {
-            position: relative;
-            background: linear-gradient(145deg, #222933, #12161c);
-            border: 1px solid #364152;
-            border-top: 1px solid #4f5d75;
-            color: #ffffff;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.15);
-            transition: all 0.15s ease;
-        }
-
-        .tactile-btn:hover {
-            background: linear-gradient(145deg, #2a3340, #161b22);
-            border-color: #58a6ff;
-            transform: translateY(-1px);
-        }
-
-        .tactile-btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.8), inset 0 2px 5px rgba(0,0,0,0.7);
-        }
-
-        .tactile-btn.active-ble {
-            border-color: var(--neon-green);
-            box-shadow: 0 0 15px rgba(0, 255, 85, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-
-        /* LED JELZŐFÉNY */
-        .led-halo {
-            width: 11px;
-            height: 11px;
-            border-radius: 50%;
-            background: #333d4b;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.8);
-            transition: all 0.3s ease;
-        }
-
-        .led-halo.connected {
-            background: var(--neon-green);
-            box-shadow: 0 0 14px var(--neon-green), 0 0 4px #ffffff;
-        }
-
-        .led-halo.scanning {
-            background: var(--amber-gold);
-            box-shadow: 0 0 14px var(--amber-gold);
-            animation: pulse-led 0.8s infinite;
-        }
-
-        .led-halo.recording {
-            background: var(--alert-red);
-            box-shadow: 0 0 14px var(--alert-red), 0 0 4px #ffffff;
-            animation: pulse-led 0.8s infinite;
-        }
-
-        .led-halo.audio-on {
-            background: var(--electric-cyan);
-            box-shadow: 0 0 12px var(--electric-cyan);
-        }
-
-        @keyframes pulse-led {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.2; transform: scale(0.8); }
-        }
-
-        /* CSV ÁLLAPOT BADGE */
-        .csv-badge {
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            padding: 5px 10px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            border: 1px solid #30363d;
-            background: #0d1117;
-            color: #8b949e;
-            transition: all 0.3s ease;
-        }
-
-        .csv-badge.active {
-            border-color: var(--alert-red);
-            color: var(--alert-red);
-            background: rgba(255, 23, 68, 0.15);
-            box-shadow: 0 0 12px rgba(255, 23, 68, 0.3);
-            animation: pulse-title 1s infinite alternate;
-        }
-
-        /* SZIMULÁTOR GOMBOK */
-        .sim-btn-group {
-            display: flex;
-            background: #0b0f14;
-            padding: 3px;
-            border-radius: 6px;
-            border: 1px solid #21262d;
-            gap: 4px;
-        }
-
-        .sim-btn {
-            background: transparent;
-            border: none;
-            color: #7d8b99;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .sim-btn.active, .sim-btn:hover {
-            background: #1c2430;
-            color: #ffffff;
-        }
-
-        .sim-btn.numb-active {
-            background: rgba(255, 23, 68, 0.25);
-            color: var(--alert-red);
-            border: 1px solid var(--alert-red);
-        }
-
-        /* NYELVVÁLTÓ GOMB (EN / HU) */
-        .lang-toggle-btn {
-            display: inline-flex;
-            align-items: center;
-            background: #0d121a;
-            border: 1px solid #222d3d;
-            border-radius: 6px;
-            padding: 2px 4px;
-            cursor: pointer;
-            gap: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .lang-toggle-btn:hover {
-            border-color: #58a6ff;
-            box-shadow: 0 0 8px rgba(88, 166, 255, 0.25);
-        }
-
-        .lang-pill {
-            padding: 3px 7px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 800;
-            color: #6e7681;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
-
-        .lang-pill.active {
-            background: #1c2736;
-            color: var(--electric-cyan);
-            box-shadow: 0 0 8px rgba(0, 229, 255, 0.35);
-        }
-
-        .lang-sep {
-            color: #30363d;
-            font-size: 11px;
-        }
-
-        /* REVOLUT DONATE GOMB */
-        .revolut-donate-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 10px;
-            background: rgba(0, 117, 255, 0.12);
-            border: 1px solid rgba(0, 117, 255, 0.45);
-            border-radius: 6px;
-            color: #58a6ff;
-            font-size: 11px;
-            font-weight: 700;
-            text-decoration: none;
-            letter-spacing: 0.5px;
-            transition: all 0.2s ease;
-            box-shadow: 0 0 10px rgba(0, 117, 255, 0.1);
-        }
-
-        .revolut-donate-btn:hover {
-            background: rgba(0, 117, 255, 0.28);
-            border-color: #00e5ff;
-            color: #ffffff;
-            box-shadow: 0 0 14px rgba(0, 229, 255, 0.4);
-            transform: translateY(-1px);
-        }
-
-        /* FŐ MONITOR KÉPERNYŐ */
-        .main-monitor {
-            flex: 1;
-            display: flex;
-            position: relative;
-            background-color: var(--bg-black);
-            min-height: 0;
-        }
-
-        /* BAL OLDAL: PLETHYSMOGRAM OSZCILLOSZKÓP */
-        .waveforms-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            border-right: 2px solid #141920;
-            position: relative;
-            min-width: 0;
-        }
-
-        .wave-header {
-            position: absolute;
-            top: 12px;
-            left: 20px;
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: var(--electric-cyan);
-            text-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
-            display: flex;
-            align-items: baseline;
-            gap: 10px;
-            z-index: 5;
-            pointer-events: none;
-        }
-
-        .wave-sub {
-            font-size: 10px;
-            color: #6e7681;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        #plethCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* 3-CIKLUSOS KLINIKAI MORFOLÓGIAI ÉS ARITMIA ELEMZŐ (MAGNIFIER HUD) */
-        .magnifier-hud {
-            position: absolute;
-            top: 12px;
-            right: 20px;
-            width: 440px;
-            background: rgba(6, 10, 15, 0.92);
-            border: 1px solid #1c2736;
-            border-radius: 8px;
-            padding: 8px 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.8), 0 0 15px rgba(0, 229, 255, 0.12);
-            z-index: 6;
-            backdrop-filter: blur(4px);
-            transition: all 0.25s ease;
-        }
-
-        .magnifier-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-
-        .magnifier-title {
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: #58a6ff;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .magnifier-sub {
-            font-size: 9.5px;
-            color: #6e7681;
-            font-weight: 700;
-        }
-
-        .magnifier-toggle-btn {
-            background: #121822;
-            border: 1px solid #233144;
-            color: #8b949e;
-            font-size: 11px;
-            font-weight: 800;
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .magnifier-toggle-btn:hover {
-            color: #ffffff;
-            border-color: #58a6ff;
-        }
-
-        #magnifierCanvas {
-            width: 100%;
-            height: 110px;
-            border: 1px solid #131c26;
-            border-radius: 4px;
-            background: #020407;
-            display: block;
-        }
-
-        .magnifier-legend {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 6px;
-            font-size: 10px;
-            color: #8b949e;
-            font-weight: 700;
-        }
-
-        .m-leg {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .m-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-        }
-        .dot-red { background: #ff1744; box-shadow: 0 0 6px #ff1744; }
-        .dot-cyan { background: #00e5ff; box-shadow: 0 0 6px #00e5ff; }
-        .dot-amber { background: #ffb700; box-shadow: 0 0 6px #ffb700; }
-
-        .magnifier-diagnostics {
-            margin-top: 6px;
-            padding-top: 4px;
-            border-top: 1px solid #1b2430;
-            font-size: 10.5px;
-            color: #8b949e;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: monospace;
-        }
-
-        .magnifier-event-row {
-            margin-top: 6px;
-            padding: 5px 8px;
-            background: rgba(255, 183, 0, 0.08);
-            border: 1px solid rgba(255, 183, 0, 0.25);
-            border-radius: 4px;
-            font-size: 10px;
-            font-family: monospace;
-            color: #c9d1d9;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.3s ease;
-        }
-
-        .magnifier-event-row.has-alert {
-            background: rgba(255, 183, 0, 0.18);
-            border-color: rgba(255, 183, 0, 0.7);
-            box-shadow: 0 0 10px rgba(255, 183, 0, 0.25);
-        }
-
-        /* UTASÍTÁS OVERLAY */
-        .guidance-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(10, 14, 20, 0.95);
-            border: 2px solid #30363d;
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px 8px;
             border-radius: 12px;
-            padding: 24px 36px;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 20px rgba(0, 229, 255, 0.15);
-            z-index: 20;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-
-        .guidance-title {
-            font-size: 19px;
-            font-weight: 900;
-            color: var(--amber-gold);
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .guidance-steps {
-            font-size: 14px;
-            color: #c9d1d9;
-            line-height: 1.6;
-            text-align: left;
-            display: inline-block;
-        }
-
-        .guidance-steps span {
-            color: var(--electric-cyan);
-            font-weight: 800;
-        }
-
-        .guidance-overlay.scanning-mode {
-            border-color: var(--amber-gold);
-            box-shadow: 0 0 30px rgba(255, 183, 0, 0.3);
-        }
-
-        .guidance-overlay.scanning-mode .guidance-title {
-            color: var(--amber-gold);
-            animation: pulse-title 1s infinite alternate;
-        }
-
-        @keyframes pulse-title {
-            from { opacity: 0.6; }
-            to { opacity: 1; }
-        }
-
-        /* JOBB OLDAL: 3 SZIGORÚAN EGYENLŐ MAGASSÁGÚ (33.3%) ORVOSI KÁRTYA */
-        .numerics-container {
-            width: 380px;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            padding: 10px 16px;
-            background: linear-gradient(90deg, #040609 0%, #000000 100%);
-            gap: 10px;
-        }
-
-        .vital-box {
-            flex: 1 1 0;
-            height: 0;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border: 1px solid #161c24;
-            background: linear-gradient(180deg, #080c12 0%, #030508 100%);
-            border-radius: 8px;
-            padding: 8px 14px;
-            position: relative;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 12px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            max-width: 200px;
+            white-space: nowrap;
             overflow: hidden;
-            transition: all 0.3s ease;
+            text-overflow: ellipsis;
         }
 
-        .vital-box-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+        .device-pill.connected {
+            color: var(--green-glow);
+            border-color: rgba(0, 255, 102, 0.3);
+            background: rgba(0, 255, 102, 0.1);
         }
 
-        .vital-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
+        .device-pill.scanning {
+            color: var(--amber-glow);
+            border-color: rgba(255, 183, 0, 0.3);
+            animation: pulse-border 1.5s infinite;
         }
 
-        .vital-label {
-            font-size: 19px;
-            font-weight: 900;
-            letter-spacing: 1.5px;
+        @keyframes pulse-border {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .top-actions {
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .vital-sub {
-            font-size: 10px;
-            color: #6e7681;
+        .icon-btn {
+            background: #192230;
+            border: 1px solid #2d3b4f;
+            color: var(--text-light);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
             font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .vital-limits {
-            font-size: 10px;
-            color: #7d8b99;
-            font-weight: 700;
-            line-height: 1.2;
-            text-align: right;
-            font-family: monospace;
-        }
-
-        .vital-value {
-            font-size: 68px;
-            font-weight: 900;
-            font-family: "Courier New", Courier, monospace, sans-serif;
-            line-height: 0.9;
-            text-align: right;
-            letter-spacing: -2px;
-            margin: 2px 0;
-        }
-
-        /* SZÍNEK */
-        .box-hr .vital-label, .box-hr .vital-value {
-            color: var(--neon-green);
-            text-shadow: 0 0 15px rgba(0, 255, 85, 0.4);
-        }
-
-        .box-spo2 .vital-label, .box-spo2 .vital-value {
-            color: var(--electric-cyan);
-            text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
-        }
-
-        .box-pi .vital-label, .box-pi .vital-value {
-            color: var(--amber-gold);
-            text-shadow: 0 0 15px rgba(255, 183, 0, 0.4);
-        }
-
-        /* EGYSÉGES KLINIKAI HATÁRÉRTÉK-SKÁLA (GAUGE) MINDHÁROM DOBOZBAN */
-        .gauge-box {
             display: flex;
-            flex-direction: column;
-            gap: 3px;
-            margin-top: 2px;
-        }
-
-        .gauge-track {
-            height: 8px;
-            background: #10151d;
-            border-radius: 4px;
-            display: flex;
-            position: relative;
-            overflow: visible;
-            border: 1px solid #21262d;
-        }
-
-        .gauge-zone {
-            height: 100%;
-        }
-        .zone-red { background: #ff1744; opacity: 0.85; }
-        .zone-yellow { background: #ffb700; opacity: 0.85; }
-        .zone-green { background: #00ff55; opacity: 0.85; }
-
-        .gauge-limit-mark {
-            position: absolute;
-            top: -3px;
-            width: 2px;
-            height: 14px;
-            background: #ffffff;
-            box-shadow: 0 0 6px #ffffff;
-            z-index: 2;
-        }
-
-        .gauge-marker {
-            position: absolute;
-            top: -4px;
-            width: 6px;
-            height: 16px;
-            background: #ffffff;
-            border-radius: 2px;
-            box-shadow: 0 0 8px #ffffff;
-            transform: translateX(-50%);
-            transition: left 0.3s ease;
-            z-index: 3;
-        }
-
-        .gauge-scale {
-            display: flex;
-            justify-content: space-between;
-            font-size: 8.5px;
-            font-weight: 800;
-            font-family: monospace;
-            color: #8b949e;
-        }
-
-        /* ZSIBBADÁS ALARM PULZÁLÁS */
-        .box-pi.alarm {
-            border-color: var(--alert-red) !important;
-            animation: pi-danger 1s infinite alternate;
-        }
-        .box-pi.alarm .vital-label, .box-pi.alarm .vital-value {
-            color: var(--alert-red) !important;
-            text-shadow: 0 0 25px var(--alert-red) !important;
-        }
-
-        @keyframes pi-danger {
-            from { background: #080c12; }
-            to { background: rgba(255, 23, 68, 0.22); }
-        }
-
-        .alarm-badge {
-            display: none;
-            position: absolute;
-            top: 8px;
-            right: 12px;
-            background: var(--alert-red);
-            color: #ffffff;
-            font-size: 10px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            padding: 2px 7px;
-            border-radius: 3px;
-            box-shadow: 0 0 10px var(--alert-red);
-        }
-
-        .box-pi.alarm .alarm-badge {
-            display: block;
-        }
-
-        /* ALSÓ ÉJSZAKAI SÁV */
-        .overnight-dock {
-            height: 200px;
-            background: linear-gradient(180deg, #090c10 0%, #030508 100%);
-            border-top: 2px solid #202733;
-            display: flex;
-            position: relative;
-            box-shadow: 0 -5px 25px rgba(0,0,0,0.9);
-        }
-
-        .timeline-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 8px 16px;
-            position: relative;
-        }
-
-        .timeline-header {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .icon-btn:active {
+            transform: scale(0.96);
+            background: #222f42;
+        }
+
+        .icon-btn.primary {
+            background: #004d5a;
+            border-color: var(--cyan-glow);
+            color: var(--cyan-glow);
+        }
+
+        .icon-btn.connected {
+            background: #0d381e;
+            border-color: var(--green-glow);
+            color: var(--green-glow);
+        }
+
+        /* UJJ ÉS RIASZTÁS SÁV */
+        .status-banner {
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-align: center;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .status-banner.finger-in {
+            background: rgba(0, 255, 102, 0.12);
+            color: var(--green-glow);
+            border-bottom: 1px solid rgba(0, 255, 102, 0.25);
+        }
+
+        .status-banner.finger-out {
+            background: rgba(255, 51, 75, 0.18);
+            color: var(--alert-red);
+            border-bottom: 1px solid rgba(255, 51, 75, 0.35);
+            animation: blink-bg 1s infinite;
+        }
+
+        @keyframes blink-bg {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .arrhythmia-banner {
+            display: none;
+            background: linear-gradient(90deg, #b8860b, #ff8c00);
+            color: #000000;
+            font-weight: 900;
+            font-size: 12px;
+            padding: 8px 16px;
+            text-align: center;
+            letter-spacing: 1px;
+            animation: pulse-arr 0.8s infinite alternate;
+        }
+
+        @keyframes pulse-arr {
+            0% { transform: scaleY(1); }
+            100% { transform: scaleY(1.04); }
+        }
+
+        /* FŐ ADATMEZŐK (3 NAGY MOBIL KÁRTYA) */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            padding: 12px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .metric-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            text-transform: uppercase;
             margin-bottom: 4px;
         }
 
-        .timeline-title {
-            font-size: 11.5px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            color: #8b949e;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .metric-value {
+            font-size: 38px;
+            font-weight: 900;
+            line-height: 1;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
         }
 
-        .timeline-legend {
-            display: flex;
-            gap: 16px;
-            font-size: 10.5px;
+        .metric-unit {
+            font-size: 11px;
             font-weight: 700;
+            color: var(--text-dim);
+            margin-top: 4px;
         }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        /* SpO2 Card */
+        .card-spo2 .metric-value {
+            color: var(--cyan-glow);
+            text-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
         }
 
-        .leg-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 2px;
+        /* Pulse Card */
+        .card-pulse .metric-value {
+            color: var(--green-glow);
+            text-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
         }
 
-        #overnightCanvas {
-            width: 100%;
-            height: 140px;
-            border: 1px solid #161c24;
-            border-radius: 4px;
-            background: #020305;
+        .heart-icon {
+            display: inline-block;
+            font-size: 10px;
+            margin-left: 2px;
+            color: #ff334b;
+            transition: transform 0.1s ease;
         }
 
-        /* JOBB ALSÓ ORVOSI RIPORT HUD */
-        .summary-hud {
-            width: 440px;
-            background: #06090e;
-            border-left: 2px solid #1a222d;
-            padding: 8px 14px;
+        .heart-icon.beat {
+            transform: scale(1.6);
+        }
+
+        /* PI Card */
+        .card-pi .metric-value {
+            color: var(--amber-glow);
+            text-shadow: 0 0 15px rgba(255, 183, 0, 0.4);
+        }
+
+        .card-pi.numb-alert {
+            background: rgba(255, 51, 75, 0.2);
+            border-color: var(--alert-red);
+        }
+
+        .card-pi.numb-alert .metric-value {
+            color: var(--alert-red);
+            text-shadow: 0 0 15px rgba(255, 51, 75, 0.6);
+        }
+
+        /* PPG HULLÁMFORMA SZEKCIÓ */
+        .wave-section {
+            padding: 0 12px;
+            margin-bottom: 12px;
+        }
+
+        .wave-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
+        }
+
+        .wave-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .wave-badge {
+            color: var(--cyan-glow);
+            font-size: 10px;
+            background: rgba(0, 229, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 160px;
+            position: relative;
+            background: #04070a;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #141b24;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* ÉJSZAKAI STATISZTIKA SZEKCIÓ */
+        .stats-section {
+            padding: 0 12px;
+            margin-bottom: 12px;
+        }
+
+        .stats-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .stats-title {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
             justify-content: space-between;
         }
 
-        .summary-title {
-            font-size: 11.5px;
-            font-weight: 800;
-            color: #8b949e;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            border-bottom: 1px solid #1c2533;
-            padding-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .stat-grid {
+        .stats-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 5px;
-            margin: 4px 0;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
 
-        .stat-card {
-            background: #0a0f16;
-            border: 1px solid #1b2432;
-            padding: 4px 6px;
-            border-radius: 5px;
+        .stat-box {
+            background: #080c12;
+            border: 1px solid #161f2c;
+            border-radius: 8px;
+            padding: 8px 10px;
         }
 
         .stat-label {
-            font-size: 8.5px;
-            color: #6e7681;
-            font-weight: 700;
-            text-transform: uppercase;
-            white-space: nowrap;
+            font-size: 10px;
+            color: var(--text-dim);
+            font-weight: 600;
+            margin-bottom: 2px;
         }
 
         .stat-val {
-            font-size: 13.5px;
-            font-weight: 900;
-            font-family: monospace;
-            color: #ffffff;
-            margin-top: 1px;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-light);
         }
 
-        .status-footer-line {
-            font-size: 10.5px;
-            color: #8b949e;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 4px;
-            padding-top: 4px;
-            border-top: 1px solid #161c24;
-        }
+        .stat-val.cyan { color: var(--cyan-glow); }
+        .stat-val.amber { color: var(--amber-glow); }
+        .stat-val.red { color: var(--alert-red); }
 
-        /* SESSIONS MODAL POPUP */
-        .sessions-modal {
+        /* ALSÓ RÖGZÍTETT VEZÉRLŐSÁV (THUMB-FRIENDLY) */
+        .bottom-bar {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.88);
-            z-index: 100;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(13, 18, 25, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--card-border);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            z-index: 200;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.8);
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            border: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(6px);
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
-        .sessions-modal-box {
-            background: #090e16;
-            border: 2px solid #253346;
-            border-radius: 10px;
-            width: 620px;
-            max-width: 92vw;
-            max-height: 85vh;
+
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-ble {
+            background: linear-gradient(135deg, #005a70, #008fa8);
+            color: #ffffff;
+        }
+
+        .btn-ble.connected {
+            background: linear-gradient(135deg, #0b4f26, #148041);
+        }
+
+        .btn-ble.scanning {
+            background: linear-gradient(135deg, #704b00, #a87200);
+            animation: pulse-border 1s infinite;
+        }
+
+        .btn-rec {
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+            color: #ffffff;
+        }
+
+        .btn-rec.recording {
+            background: linear-gradient(135deg, #b71c1c, #d32f2f);
+            animation: pulse-border 1.5s infinite;
+        }
+
+        .btn-share {
+            background: linear-gradient(135deg, #0277bd, #0288d1);
+            color: #ffffff;
+            flex: 0.8;
+        }
+
+        /* ESZKÖZVÁLASZTÓ MODAL (BOTTOM SHEET) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 300;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
             display: flex;
-            flex-direction: column;
-            padding: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 25px rgba(0, 229, 255, 0.2);
         }
-        .sessions-modal-header {
+
+        .modal-sheet {
+            background: #111722;
+            border-top: 2px solid #2d3b4f;
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px 16px 30px;
+            box-shadow: 0 -8px 30px rgba(0,0,0,0.9);
+            animation: slideUp 0.25s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 13px;
+            margin-bottom: 14px;
+        }
+
+        .modal-title {
+            font-size: 15px;
             font-weight: 800;
-            color: var(--electric-cyan);
-            border-bottom: 1px solid #1b2738;
-            padding-bottom: 8px;
-            margin-bottom: 10px;
+            color: var(--cyan-glow);
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
-        .sessions-modal-close {
-            background: transparent;
+
+        .modal-close {
+            background: #1e2633;
             border: none;
-            color: #8b949e;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 2px 6px;
-        }
-        .sessions-modal-close:hover {
             color: #ffffff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
         }
-        .sessions-list {
-            flex: 1;
-            overflow-y: auto;
+
+        .device-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            padding-right: 4px;
+            margin-bottom: 16px;
         }
-        .session-card {
-            background: #0e1520;
-            border: 1px solid #1c2738;
-            border-radius: 6px;
-            padding: 10px 14px;
+
+        .device-item {
+            background: #16202e;
+            border: 1px solid #28374a;
+            border-radius: 10px;
+            padding: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .device-item:active {
+            background: #1e2c40;
+            border-color: var(--cyan-glow);
+        }
+
+        .device-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .device-sub {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .device-rssi {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--green-glow);
+            background: rgba(0, 255, 102, 0.1);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .modal-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-modal-action {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-scan-again {
+            background: #005a70;
+            color: #ffffff;
+        }
+
+        .btn-forget {
+            background: #331515;
+            color: #ff6666;
+            border: 1px solid #552222;
         }
     </style>
 </head>
 <body>
 
-    <!-- FELSŐ ORVOSI VEZÉRLŐPULT -->
-    <header class="top-console">
-        <div class="hospital-header">
-            <div class="bed-badge">BED 1</div>
-            <div>
-                <div class="patient-title" id="patientTitle">VIATOM PC-60FW BEDSIDE MONITOR</div>
-                <div id="patientSubtitle" style="font-size: 10px; color: #58a6ff; font-weight: 700; letter-spacing: 1px;">CLINICAL CIRCULATION & NUMBNESS ANALYSIS</div>
+    <!-- FELSŐ SÁV -->
+    <header class="top-bar">
+        <div class="brand-zone">
+            <div class="brand-title">
+                <span>⚡</span> VIATOM ICU MOBILE
+            </div>
+            <div id="deviceBadge" class="device-pill" onclick="openDevicePicker()">
+                ● Nincs kapcsolat
             </div>
         </div>
-
-        <!-- 3D TACTILE NYOMÓGOMBOK ÉS CSV BADGE -->
-        <div class="controls-group">
-            <!-- BLUETOOTH GOMB -->
-            <button id="btnBle" class="tactile-btn" onclick="toggleBle()">
-                <div id="ledBle" class="led-halo"></div>
-                <span id="txtBle">Bluetooth Connect</span>
+        <div class="top-actions">
+            <button id="btnDevicePicker" class="icon-btn" onclick="openDevicePicker()">
+                🔍 Keresés
             </button>
-
-            <!-- ÉJSZAKAI FELVÉTEL GOMB -->
-            <button id="btnRec" class="tactile-btn" onclick="toggleRec()">
-                <div id="ledRec" class="led-halo"></div>
-                <span id="txtRec">● Overnight Logging</span>
-                <span id="recTimer" style="font-family: monospace; font-size: 11px; color: #ff5555; display: none;">00:00:00</span>
+            <button id="btnAudioToggle" class="icon-btn" onclick="toggleAudio()">
+                🔊
             </button>
-
-            <!-- KORÁBBI NAPLÓK / VISSZANÉZÉS GOMB (ANDROISON KÖZVETLENÜL ELÉRHETŐ) -->
-            <button id="btnSessions" class="tactile-btn" onclick="openSessionsModal()" style="display: none;">
-                <span id="txtSessions">📁 Sessions</span>
-            </button>
-
-            <!-- CSV ÁLLAPOT BADGE (Lakatolt mentés) -->
-            <div id="csvBadge" class="csv-badge">
-                <span id="csvBadgeDot" style="width:7px; height:7px; border-radius:50%; background:#6e7681;"></span>
-                <span id="csvBadgeTxt">CSV: STANDBY (NOT RECORDING)</span>
-            </div>
-
-            <!-- HANG (INTENZÍV AUDIO) GOMB -->
-            <button id="btnAudio" class="tactile-btn" onclick="toggleAudio()">
-                <div id="ledAudio" class="led-halo audio-on"></div>
-                <span id="txtAudio">🔊 Audio: ON</span>
-            </button>
-
-            <!-- TESZT SZIMULÁTOR KAPCSOLÓK -->
-            <div class="sim-btn-group">
-                <button id="simNorm" class="sim-btn" onclick="setSim('normal')">NORMAL</button>
-                <button id="simNumb" class="sim-btn" onclick="setSim('numb')">⚠️ NUMBNESS</button>
-                <button id="simOff" class="sim-btn" onclick="setSim('off')">REMOVED</button>
-            </div>
-        </div>
-
-        <div style="text-align: right; display: flex; align-items: center; gap: 12px;">
-            <!-- NYELVVÁLTÓ GOMB (EN / HU) -->
-            <div class="lang-toggle-btn" title="Switch Language / Nyelvváltás">
-                <span id="langEnBadge" class="lang-pill active" onclick="setLanguage('en')">🇬🇧 EN</span>
-                <span class="lang-sep">|</span>
-                <span id="langHuBadge" class="lang-pill" onclick="setLanguage('hu')">🇭🇺 HU</span>
-            </div>
-
-            <!-- REVOLUT DONATE GOMB -->
-            <a href="https://revolut.me/grezoo" target="_blank" rel="noopener noreferrer" class="revolut-donate-btn" title="Developer Support / Fejlesztői támogatás (Revolut: @grezoo)">
-                <span style="font-size: 13px;">☕</span>
-                <span>Revolut: <b>@grezoo</b></span>
-            </a>
-            <div>
-                <div id="clockTime" style="font-size: 16px; font-weight: 900; font-family: monospace; color: #ffffff;">18:00:00</div>
-                <div id="clockLabel" style="font-size: 10px; color: #7d8b99; font-weight: 700;">REAL TIME</div>
-            </div>
         </div>
     </header>
 
-    <!-- KÖZÉPSŐ FŐ MONITOR -->
-    <main class="main-monitor">
-        <!-- BALRA: PLETH PULZUSHULLÁM + 3-CIKLUSOS ORVOSI MAGNIFIER -->
-        <section class="waveforms-container">
-            <div class="wave-header">
-                <span id="plethTitle">Pleth</span>
-                <span class="wave-sub" id="plethSub">PULSE WAVE (50Hz HEADROOM AGC)</span>
-            </div>
-            
-            <canvas id="plethCanvas"></canvas>
+    <!-- UJJ STÁTUSZ ÉS RIASZTÁS SÁV -->
+    <div id="fingerBanner" class="status-banner finger-out">
+        ⚠️ CSIPESZ LEVÉVE - HELYEZZE FEL AZ UJJÁRA
+    </div>
 
-            <!-- 3-CIKLUSOS KLINIKAI MORFOLÓGIAI ÉS ARITMIA ELEMZŐ (MAGNIFIER HUD) -->
-            <div class="magnifier-hud" id="magnifierHud">
-                <div class="magnifier-header">
-                    <div class="magnifier-title">
-                        <span id="magTitle">🔬 PULSE WAVE MORPHOLOGY & RHYTHM ANALYZER</span>
-                        <span class="magnifier-sub" id="magSub">[ 3 CYCLES AGC ]</span>
-                    </div>
-                    <button class="magnifier-toggle-btn" id="btnToggleMag" onclick="toggleMagnifier()" title="Collapse / Expand">–</button>
-                </div>
-                <div id="magnifierBody">
-                    <canvas id="magnifierCanvas" width="410" height="110"></canvas>
-                    <div class="magnifier-legend">
-                        <span class="m-leg"><span class="m-dot dot-red"></span> <span id="magSystole">Systolic (Ejection)</span></span>
-                        <span class="m-leg"><span class="m-dot dot-cyan"></span> <span id="magIncisura">Dicrotic Notch (Aortic Closure)</span></span>
-                        <span class="m-leg"><span class="m-dot dot-amber"></span> <span id="magDiastole">Diastolic (Reflection)</span></span>
-                    </div>
-                    <div class="magnifier-diagnostics" id="magnifierDiag">
-                        <span><span id="diagRhythmLabel">Rhythm:</span> <b id="diagRhythm" style="color:var(--neon-green)">REGULAR</b></span>
-                        <span><span id="diagStiffLabel">Vessel Wall:</span> <b id="diagStiffness" style="color:var(--neon-green)">ELASTIC</b></span>
-                        <span><span id="diagValveLabel">Aortic Valve:</span> <b id="diagValve" style="color:var(--electric-cyan)">NORMAL CLOSURE</b></span>
-                    </div>
-                    <div class="magnifier-event-row" id="magnifierEventRow">
-                        <div>
-                            <span id="lastEventPrefix" style="color:#ffb700; font-weight:800;">⚡ Last Anomaly:</span>
-                            <span id="lastEventTxt" style="color:#ffffff; font-weight:700;">No registered anomalies</span>
-                        </div>
-                        <div>
-                            <span id="totalEventsPrefix" style="color:#8b949e;">Total:</span>
-                            <b id="extraBeatsBadge" style="color:#ffb700; font-size:11px;">0 events</b>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div id="arrhythmiaBanner" class="arrhythmia-banner">
+        ⚠️ RITMUSZAVAR ÉSZLELVE (EXTRASYSTOLE / PAUZA)!
+    </div>
 
-            <!-- NAGY UTASÍTÁS OVERLAY -->
-            <div id="guidanceOverlay" class="guidance-overlay">
-                <div id="guidanceTitle" class="guidance-title">⚠️ SENSOR NOT CONNECTED</div>
-                <div id="guidanceSteps" class="guidance-steps">
-                    1. Place the sensor clip on your <span>finger</span> (to power it on)!<br>
-                    2. Click the <span>[ ᛒ BLUETOOTH CONNECT ]</span> button above!<br>
-                    <small style="color:#58a6ff; font-weight:normal;">(The system Bluetooth radio will be activated automatically if needed.)</small>
-                </div>
-            </div>
-        </section>
+    <!-- FŐ ORVOSI ADATOK (3 NAGY MOBIL KÁRTYA) -->
+    <main class="metrics-grid">
+        <div class="metric-card card-spo2">
+            <div class="metric-label">SpO2 Oxigén</div>
+            <div id="valSpo2" class="metric-value">--</div>
+            <div class="metric-unit">% SAT</div>
+        </div>
 
-        <!-- JOBBRA: 3 SZIGORÚAN EGYENLŐ MAGASSÁGÚ (33.3%) ORVOSI KÁRTYA -->
-        <aside class="numerics-container">
-            <!-- 1. HR / PULZUS (Neon Zöld) -->
-            <div class="vital-box box-hr">
-                <div class="vital-box-top">
-                    <div class="vital-meta">
-                        <div class="vital-label">
-                            <span>HR</span>
-                            <span id="heartIcon" style="font-size:16px; opacity:0.8;">❤️</span>
-                        </div>
-                        <div class="vital-sub" id="hrSub">HEART RATE (BPM)</div>
-                    </div>
-                    <div class="vital-limits">REF: 50 — 100<br>ALARM: &lt; 45 / &gt; 130</div>
-                </div>
-                <div id="valHr" class="vital-value">--</div>
-                <!-- HR HATÁRÉRTÉK SKÁLA -->
-                <div class="gauge-box">
-                    <div class="gauge-track">
-                        <div class="gauge-zone zone-yellow" style="width: 25%;" title="Bradycardia (< 50)"></div>
-                        <div class="gauge-zone zone-green" style="width: 50%;" title="Normal (50 - 100)"></div>
-                        <div class="gauge-zone zone-red" style="width: 25%;" title="Tachycardia (> 100)"></div>
-                        <div class="gauge-marker" id="hrMarker" style="left: 50%;"></div>
-                    </div>
-                    <div class="gauge-scale">
-                        <span id="hrBrady" style="color:var(--amber-gold);">50 BRADYCARDIA</span>
-                        <span id="hrNormal" style="color:var(--neon-green);">NORMAL RANGE</span>
-                        <span id="hrTachy" style="color:var(--alert-red);">100 TACHYCARDIA</span>
-                    </div>
-                </div>
-            </div>
+        <div class="metric-card card-pulse">
+            <div class="metric-label">Pulzus <span id="heartIcon" class="heart-icon">❤️</span></div>
+            <div id="valPulse" class="metric-value">--</div>
+            <div class="metric-unit">BPM</div>
+        </div>
 
-            <!-- 2. SPO2 / VÉROXIGÉN (Elektromos Ciánkék) -->
-            <div class="vital-box box-spo2">
-                <div class="vital-box-top">
-                    <div class="vital-meta">
-                        <div class="vital-label">SpO2</div>
-                        <div class="vital-sub" id="spo2Sub">OXYGEN SATURATION (%)</div>
-                    </div>
-                    <div class="vital-limits">REF: 95 — 100%<br><span style="color:var(--alert-red); font-weight:800;">ALARM: &lt; 90%</span></div>
-                </div>
-                <div id="valSpo2" class="vital-value">--</div>
-                <!-- SPO2 HATÁRÉRTÉK SKÁLA -->
-                <div class="gauge-box">
-                    <div class="gauge-track">
-                        <div class="gauge-zone zone-red" style="width: 25%;" title="Hypoxia / Alarm (< 90%)"></div>
-                        <div class="gauge-zone zone-yellow" style="width: 25%;" title="Reduced (90 - 94%)"></div>
-                        <div class="gauge-zone zone-green" style="width: 50%;" title="Optimal (95 - 100%)"></div>
-                        <div class="gauge-marker" id="spo2Marker" style="left: 90%;"></div>
-                    </div>
-                    <div class="gauge-scale">
-                        <span id="spo2Hypoxia" style="color:var(--alert-red);">90% HYPOXIA</span>
-                        <span style="color:var(--amber-gold);">95%</span>
-                        <span id="spo2Optimal" style="color:var(--electric-cyan);">100% OPTIMAL</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. PERFÚZIÓS INDEX (PI%) + KLINIKAI LIMIT GAUGE (Borostyán Arany) -->
-            <div id="boxPi" class="vital-box box-pi">
-                <div class="alarm-badge" id="piAlarmBadge">⚠️ NUMBNESS!</div>
-                <div class="vital-box-top">
-                    <div class="vital-meta">
-                        <div class="vital-label">PI %</div>
-                        <div class="vital-sub" id="piSub">PERFUSION INDEX</div>
-                    </div>
-                    <div class="vital-limits">
-                        REF: &gt; 1.5%<br>
-                        <span style="color:var(--alert-red); font-weight:800;">LIMIT: &lt; 0.8%</span>
-                    </div>
-                </div>
-                <div id="valPi" class="vital-value">--</div>
-                <!-- PI HATÁRÉRTÉK SKÁLA -->
-                <div class="gauge-box">
-                    <div class="gauge-track">
-                        <div class="gauge-zone zone-red" style="width: 14%;" title="Critical Numbness / Hypoperfusion (< 0.8%)"></div>
-                        <div class="gauge-zone zone-yellow" style="width: 22%;" title="Reduced Perfusion (0.8 - 1.5%)"></div>
-                        <div class="gauge-zone zone-green" style="width: 64%;" title="Normal Perfusion (> 1.5%)"></div>
-                        <div class="gauge-limit-mark" style="left: 14%;" title="0.8% Numbness Threshold"></div>
-                        <div class="gauge-marker" id="piMarker" style="left: 30%;"></div>
-                    </div>
-                    <div class="gauge-scale">
-                        <span id="piLimitScale" style="color:var(--alert-red); font-weight:800;">0.8% NUMBNESS LIMIT</span>
-                        <span style="color:var(--amber-gold);">1.5%</span>
-                        <span id="piNormalScale" style="color:var(--neon-green);">10.0%+ NORMAL</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
+        <div id="cardPi" class="metric-card card-pi">
+            <div class="metric-label">Perfúzió (PI)</div>
+            <div id="valPi" class="metric-value">--</div>
+            <div id="unitPi" class="metric-unit">% INDEX</div>
+        </div>
     </main>
 
-    <!-- ALSÓ DOCK: ÉJSZAKAI SÁV ÉS ELTÉRÉS-ÖSSZESÍTŐ -->
-    <footer class="overnight-dock">
-        <div class="timeline-section">
-            <div class="timeline-header">
-                <div class="timeline-title">
-                    <span id="timelineTitle">🌙 Overnight Master Timeline Strip</span>
-                    <span id="timelineSpan" style="color: #4f5d75; font-size: 11px;">[ 8-HOUR COMPLETE CIRCULATION TREND ]</span>
-                </div>
-                <div class="timeline-legend">
-                    <div class="legend-item"><div class="leg-dot" style="background: var(--amber-gold);"></div><span>PI %</span></div>
-                    <div class="legend-item"><div class="leg-dot" style="background: var(--electric-cyan);"></div><span>SpO2 %</span></div>
-                    <div class="legend-item"><div class="leg-dot" style="background: var(--alert-red);"></div><span id="legendNumb" style="color: var(--alert-red);">⚠️ Numbness (&lt; 0.8%)</span></div>
-                    <div class="legend-item"><div class="leg-dot" style="background: #00e5ff; box-shadow: 0 0 6px #00e5ff;"></div><span id="legendApnea" style="color: #00e5ff;">💨 Apnea / Desat</span></div>
-                </div>
+    <!-- 60 FPS PPG PULZUSHULLÁM -->
+    <section class="wave-section">
+        <div class="wave-card">
+            <div class="wave-header">
+                <span>Fotopletizmogram (PPG)</span>
+                <span class="wave-badge">60 FPS • DINAMIKUS AGC</span>
             </div>
-            <canvas id="overnightCanvas"></canvas>
+            <div class="canvas-container">
+                <canvas id="ppgCanvas"></canvas>
+            </div>
         </div>
+    </section>
 
-        <!-- JOBB ALSÓ ORVOSI RIPORT HUD -->
-        <div class="summary-hud">
-            <div class="summary-title" id="reportTitle">📊 Overnight Discrepancy & Apnea Report</div>
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-label" id="statEpisodesLabel">Numbness Episodes</div>
-                    <div id="statEpisodes" class="stat-val">0 events</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label" id="statNumbTimeLabel">Numbness Duration</div>
-                    <div id="statNumbTime" class="stat-val">0.0 min</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label" id="statApneaLabel">Sleep Apnea (ODI)</div>
-                    <div id="statApnea" class="stat-val" style="color:var(--electric-cyan); font-size:12px;">0.0 / h</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label" id="statLowestSpo2Label">Nadir SpO2</div>
-                    <div id="statLowestSpo2" class="stat-val" style="color:var(--electric-cyan);">--</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label" id="statLowestPiLabel">Lowest PI</div>
-                    <div id="statLowestPi" class="stat-val" style="color:var(--amber-gold);">--</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label" id="statArrhythmiasLabel">Arrhythmias</div>
-                    <div id="statArrhythmias" class="stat-val" style="color:#ffb700;">0 events</div>
-                </div>
+    <!-- ALVÁSI APNOÉ ÉS STATISZTIKA -->
+    <section class="stats-section">
+        <div class="stats-card">
+            <div class="stats-title">
+                <span>Éjszakai Alvás & Keringés Elemzés</span>
+                <span id="recordTimer" style="color: var(--green-glow);">00:00:00</span>
             </div>
-            <div class="status-footer-line">
-                <span id="deviceStatusText" style="color:#58a6ff; font-weight:700;">SENSOR: STANDBY</span>
-                <span id="statDurationBadge" style="color:#ffffff; font-weight:800; font-family:monospace;"><span id="statTimePrefix">TIME:</span> <span id="statDuration">00:00</span></span>
-                <span id="csvStatusBadge" style="color:#8b949e; font-weight:700;">CSV: INACTIVE</span>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Apnoé Index (ODI)</div>
+                    <div id="statOdi" class="stat-val cyan">0.0 / h</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Deszaturáció (<91%)</div>
+                    <div id="statApneaDrops" class="stat-val amber">0 db</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Zsibbadás (PI < 0.8%)</div>
+                    <div id="statNumb" class="stat-val red">0 db (0 mp)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Legalacsonyabb SpO2</div>
+                    <div id="statMinSpo2" class="stat-val">-- %</div>
+                </div>
             </div>
         </div>
+    </section>
+
+    <!-- ALSÓ KÉNYELMES VEZÉRLŐSÁV -->
+    <footer class="bottom-bar">
+        <button id="btnBle" class="action-btn btn-ble" onclick="handleBleToggle()">
+            📡 Bluetooth
+        </button>
+        <button id="btnRec" class="action-btn btn-rec" onclick="handleRecToggle()">
+            ⏺ Rögzítés
+        </button>
+        <button id="btnShare" class="action-btn btn-share" onclick="handleShareCsv()">
+            📤 CSV
+        </button>
     </footer>
+
+    <!-- ESZKÖZVÁLASZTÓ MODAL BOTTOM SHEET -->
+    <div id="deviceModal" class="modal-overlay" onclick="closeDevicePickerOnOverlay(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title">Bluetooth Oximéter Kereső</div>
+                <button class="modal-close" onclick="closeDevicePicker()">✕</button>
+            </div>
+            <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px;">
+                Kapcsolja be a mérőcsipeszt az ujján. Válassza ki a saját készülékét:
+            </p>
+
+            <div id="deviceList" class="device-list">
+                <div style="text-align: center; color: var(--text-dim); padding: 20px; font-size: 13px;">
+                    Keresés a közelben...
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-modal-action btn-scan-again" onclick="triggerScan()">
+                    🔄 Új keresés indítása
+                </button>
+                <button id="btnForgetCached" class="btn-modal-action btn-forget" onclick="handleForgetDevice()" style="display: none;">
+                    🗑️ Mentett csipesz elfelejtése
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ==========================================
-        // KÉTNYELVŰ ORVOSTECHNIKAI SZÓTÁR (i18n)
+        // ÁLLAPOT ÉS VÁLTOZÓK
         // ==========================================
-        const I18N = {
-            en: {
-                patientTitle: "VIATOM PC-60FW BEDSIDE MONITOR",
-                patientSubtitle: "CLINICAL CIRCULATION & NUMBNESS ANALYSIS",
-                clockLabel: "REAL TIME",
-                bleIdle: "Bluetooth Connect",
-                bleScanning: "Scanning...",
-                bleConnected: "ᛒ Connected",
-                recIdle: "● Overnight Logging",
-                recActive: "● RECORDING",
-                csvStandby: "CSV: STANDBY (NOT RECORDING)",
-                csvRecording: "● CSV: RECORDING ACTIVE",
-                csvFooterInactive: "CSV: INACTIVE",
-                csvFooterActive: "CSV: LOGGING ACTIVE",
-                audioOn: "🔊 Audio: ON",
-                audioOff: "🔇 Audio: OFF",
-                simNorm: "NORMAL",
-                simNumb: "⚠️ NUMBNESS",
-                simOff: "REMOVED",
-                plethTitle: "Pleth",
-                plethSub: "PULSE WAVE (50Hz HEADROOM AGC)",
-                magTitle: "🔬 PULSE WAVE MORPHOLOGY & RHYTHM ANALYZER",
-                magSub: "[ 3 CYCLES AGC ]",
-                magSystole: "Systolic (Ejection)",
-                magIncisura: "Dicrotic Notch (Aortic Closure)",
-                magDiastole: "Diastolic (Reflection)",
-                diagRhythmLabel: "Rhythm:",
-                diagStiffLabel: "Vessel Wall:",
-                diagValveLabel: "Aortic Valve:",
-                diagRhythmRegular: "REGULAR",
-                diagStiffElastic: "ELASTIC",
-                diagStiffModerate: "MODERATE",
-                diagStiffReduced: "REDUCED",
-                diagValveNormal: "NORMAL CLOSURE",
-                diagValveVisible: "VISIBLE",
-                diagValveLow: "LOW AMPLITUDE",
-                arrhythmiaExtrasystole: "EXTRASYSTOLE",
-                arrhythmiaBigeminy: "BIGEMINY (COUPLED BEATS)",
-                arrhythmiaAfib: "AFIB SUSPICION (CHAOTIC)",
-                lastEventPrefix: "⚡ Last Anomaly:",
-                noEvents: "No registered anomalies",
-                totalEventsPrefix: "Total:",
-                countUnit: "events",
-                guidanceDisconnectedTitle: "⚠️ SENSOR NOT CONNECTED",
-                guidanceDisconnectedSteps: "1. Place the sensor clip on your <span>finger</span> (to power it on)!<br>2. Click the <span>[ ᛒ BLUETOOTH CONNECT ]</span> button above!<br><small style=\"color:#58a6ff; font-weight:normal;\">(The system Bluetooth radio will be activated automatically if needed.)</small>",
-                guidanceScanningTitle: "🔍 SCANNING FOR SENSOR CLIP...",
-                guidanceScanningSteps: "Bluetooth discovery initiated...<br><b>Ensure the clip is on your finger and powered on!</b>",
-                guidanceFingerOffTitle: "⚠️ FINGER SENSOR REMOVED",
-                guidanceFingerOffSteps: "Attach the pulse oximeter clip to your finger to resume monitoring!",
-                hrSub: "HEART RATE (BPM)",
-                hrBrady: "50 BRADYCARDIA",
-                hrNormal: "NORMAL RANGE",
-                hrTachy: "100 TACHYCARDIA",
-                spo2Sub: "OXYGEN SATURATION (%)",
-                spo2Hypoxia: "90% HYPOXIA",
-                spo2Optimal: "100% OPTIMAL",
-                piSub: "PERFUSION INDEX",
-                piAlarmBadge: "⚠️ NUMBNESS!",
-                piLimitScale: "0.8% NUMBNESS LIMIT",
-                piNormalScale: "10.0%+ NORMAL",
-                timelineTitle: "🌙 Overnight Master Timeline Strip",
-                timelineSub: "[ 8-HOUR COMPLETE CIRCULATION TREND ]",
-                legendNumb: "⚠️ Numbness (< 0.8%)",
-                legendApnea: "💨 Apnea / Desat",
-                timelineEmpty: "NO OVERNIGHT DATA RECORDED - START LOGGING",
-                timelineThreshold: "0.8% NUMBNESS THRESHOLD LINE",
-                reportTitle: "📊 Overnight Discrepancy & Apnea Report",
-                statEpisodesLabel: "Numbness Episodes",
-                statNumbTimeLabel: "Numbness Duration",
-                statApneaLabel: "Sleep Apnea (ODI)",
-                statLowestSpo2Label: "Nadir SpO2",
-                statLowestPiLabel: "Lowest PI",
-                statArrhythmiasLabel: "Arrhythmias",
-                deviceStandby: "SENSOR: STANDBY",
-                deviceScanning: "SCANNING NEARBY...",
-                timePrefix: "TIME:",
-                unitMin: "min",
-                unitCount: "events",
-                apneaNormal: "NORMAL",
-                recAlertEnded: "Overnight recording finished!\n\nDuration: {mins} minutes\nNumbness episodes: {eps}\nMeasurement data successfully saved to meresi_naplo.csv!",
-                btnSessions: "📁 Sessions",
-                modalSessionsTitle: "📁 RECORDED SESSIONS (CSV LOGS)",
-                modalSessionsEmpty: "No recordings found yet.",
-                modalReplay: "Replay",
-                modalShare: "Share / Export",
-                modalClose: "Close",
-            },
-            hu: {
-                patientTitle: "VIATOM PC-60FW BETEGMONITOR",
-                patientSubtitle: "KLINIKAI KERINGÉS- ÉS ZSIBBADÁSANALÍZIS",
-                clockLabel: "VALÓS IDŐ",
-                bleIdle: "Bluetooth Kapcsolódás",
-                bleScanning: "Keresés...",
-                bleConnected: "ᛒ Csatlakoztatva",
-                recIdle: "● Éjszakai Naplózás",
-                recActive: "● RÖGZÍTÉS",
-                csvStandby: "CSV: KÉSZENLÉTBEN (NINCS MENTÉS)",
-                csvRecording: "● CSV: FELVÉTEL FOLYAMATBAN",
-                csvFooterInactive: "CSV: INAKTÍV",
-                csvFooterActive: "CSV: MENTÉS AKTÍV",
-                audioOn: "🔊 Audio: BE",
-                audioOff: "🔇 Audio: KI",
-                simNorm: "NORMÁL",
-                simNumb: "⚠️ ZSIBBADÁS",
-                simOff: "LEVÉVE",
-                plethTitle: "Pleth",
-                plethSub: "PULZUSHULLÁM (50Hz HEADROOM AGC)",
-                magTitle: "🔬 PULZUSHULLÁM MORFOLÓGIA & RITMUSELEMZŐ",
-                magSub: "[ 3 CIKLUS AGC ]",
-                magSystole: "Szisztolé (Kilökés)",
-                magIncisura: "Incisura (Aortazáródás)",
-                magDiastole: "Diasztolé (Reflexió)",
-                diagRhythmLabel: "Ritmus:",
-                diagStiffLabel: "Érfal:",
-                diagValveLabel: "Aorta:",
-                diagRhythmRegular: "SZABÁLYOS",
-                diagStiffElastic: "RUGALMAS",
-                diagStiffModerate: "MÉRSÉKELT",
-                diagStiffReduced: "CSÖKKENT",
-                diagValveNormal: "ÉP ZÁRÓDÁS",
-                diagValveVisible: "LÁTHATÓ",
-                diagValveLow: "ALACSONY",
-                arrhythmiaExtrasystole: "EXTRASZISZTOLÉ",
-                arrhythmiaBigeminy: "BIGEMINIA (PÁROS ÜTÉS)",
-                arrhythmiaAfib: "AFIB GYANÚ (KAOTIKUS)",
-                lastEventPrefix: "⚡ Utolsó eltérés:",
-                noEvents: "Nincs regisztrált eltérés",
-                totalEventsPrefix: "Összesen:",
-                countUnit: "db",
-                guidanceDisconnectedTitle: "⚠️ CSIPESZ NINCS CSATLAKOZTATVA",
-                guidanceDisconnectedSteps: "1. Helyezze a mérőcsipeszt az <span>ujjára</span> (hogy bekapcsoljon)!<br>2. Kattintson a fenti <span>[ ᛒ BLUETOOTH KAPCSOLÓDÁS ]</span> gombra!<br><small style=\"color:#58a6ff; font-weight:normal;\">(A gép Bluetooth rádióját a program automatikusan bekapcsolja.)</small>",
-                guidanceScanningTitle: "🔍 CSIPESZ KERESÉSE FOLYAMATBAN...",
-                guidanceScanningSteps: "Bluetooth felderítés indult...<br><b>Győződjön meg róla, hogy a csipesz az ujján van és be van kapcsolva!</b>",
-                guidanceFingerOffTitle: "⚠️ CSIPESZ LEVÉVE AZ UJJRÓL",
-                guidanceFingerOffSteps: "Helyezze fel a mérőcsipeszt az ujjára a méréshez!",
-                hrSub: "SZÍVFREKVENCIA (BPM)",
-                hrBrady: "50 BRADIKARDIA",
-                hrNormal: "NORMÁL TARTOMÁNY",
-                hrTachy: "100 TACHIKARDIA",
-                spo2Sub: "OXIGÉN TELÍTETTSÉG (%)",
-                spo2Hypoxia: "90% HIPOXIA",
-                spo2Optimal: "100% OPTIMÁLIS",
-                piSub: "PERFÚZIÓS INDEX",
-                piAlarmBadge: "⚠️ ZSIBBADÁS!",
-                piLimitScale: "0.8% ZSIBBADÁS LIMIT",
-                piNormalScale: "10.0%+ NORMÁL",
-                timelineTitle: "🌙 Egész Éjszakai Idősáv (Overnight Master Strip)",
-                timelineSub: "[ 8 ÓRÁS TELJES KERINGÉSI GÖRBE ]",
-                legendNumb: "⚠️ Zsibbadás (< 0.8%)",
-                legendApnea: "💨 Apnoé / Esés",
-                timelineEmpty: "NINCS MÉG ÉJSZAKAI ADAT - INDÍTSA EL A NAPLÓZÁST",
-                timelineThreshold: "0.8% ZSIBBADÁSI KÜSZÖBVONAL",
-                reportTitle: "📊 Éjszakai Eltérés Riport",
-                statEpisodesLabel: "Zsibbadási Epizód",
-                statNumbTimeLabel: "Zsibbadás Kiesés",
-                statApneaLabel: "Alvási Apnoé (ODI)",
-                statLowestSpo2Label: "Legmélyebb SpO2",
-                statLowestPiLabel: "Legmélyebb PI",
-                statArrhythmiasLabel: "Ritmuszavar",
-                deviceStandby: "CSIPESZ: KÉSZENLÉTBEN",
-                deviceScanning: "KERESÉS A KÖZELBEN...",
-                timePrefix: "IDŐ:",
-                unitMin: "perc",
-                unitCount: "db",
-                apneaNormal: "NORMÁL",
-                recAlertEnded: "Éjszakai felvétel lezárva!\n\nIdőtartam: {mins} perc\nZsibbadási epizódok: {eps}\nA mérés sikeresen elmentve a meresi_naplo.csv fájlba!",
-                btnSessions: "📁 Naplók",
-                modalSessionsTitle: "📁 MÉRÉSI NAPLÓK (CSV FÁJLOK)",
-                modalSessionsEmpty: "Még nincsenek rögzített mérések.",
-                modalReplay: "Visszanézés",
-                modalShare: "Megosztás",
-                modalClose: "Bezárás",
-            }
+        let state = {
+            bleConnected: false,
+            bleScanning: false,
+            deviceName: "Nincs kapcsolat",
+            deviceAddress: "",
+            savedMac: "",
+            savedName: "",
+            statusMsg: "",
+            spo2: null,
+            pulse: null,
+            pi: null,
+            fingerIn: false,
+            recording: false,
+            recordSeconds: 0,
+            numbEpisodes: 0,
+            numbTotalSeconds: 0,
+            apneaEpisodes: 0,
+            lowestSpo2: null,
+            audioEnabled: true,
+            discoveredDevices: []
         };
 
-        let currentLang = localStorage.getItem('viatom_monitor_lang') || 'en';
-
-        function t(key, vars = {}) {
-            let str = (I18N[currentLang] && I18N[currentLang][key]) || (I18N['en'] && I18N['en'][key]) || key;
-            for (const [k, v] of Object.entries(vars)) {
-                str = str.replace(`{${k}}`, v);
-            }
-            return str;
-        }
-
-        function updateStaticTranslations() {
-            // Felső konzol
-            document.getElementById('patientTitle').innerText = t('patientTitle');
-            document.getElementById('patientSubtitle').innerText = t('patientSubtitle');
-            document.getElementById('clockLabel').innerText = t('clockLabel');
-
-            // Gombok és badgek állapottól függően
-            if (!isBleConnected && !isBleScanning) {
-                document.getElementById('txtBle').innerText = t('bleIdle');
-            } else if (isBleScanning) {
-                document.getElementById('txtBle').innerText = t('bleScanning');
-            } else if (isBleConnected) {
-                document.getElementById('txtBle').innerText = t('bleConnected');
-            }
-
-            if (!isRecording) {
-                document.getElementById('txtRec').innerText = t('recIdle');
-                document.getElementById('csvBadgeTxt').innerText = t('csvStandby');
-                document.getElementById('csvStatusBadge').innerText = t('csvFooterInactive');
-            } else {
-                document.getElementById('txtRec').innerText = t('recActive');
-                document.getElementById('csvBadgeTxt').innerText = `${t('csvRecording')} (${formatSeconds(recordSeconds)})`;
-                document.getElementById('csvStatusBadge').innerText = t('csvFooterActive');
-            }
-
-            document.getElementById('txtAudio').innerText = audioEnabled ? t('audioOn') : t('audioOff');
-            document.getElementById('simNorm').innerText = t('simNorm');
-            document.getElementById('simNumb').innerText = t('simNumb');
-            document.getElementById('simOff').innerText = t('simOff');
-
-            // Hullám fejléc
-            document.getElementById('plethTitle').innerText = t('plethTitle');
-            document.getElementById('plethSub').innerText = t('plethSub');
-
-            // Magnifier HUD
-            document.getElementById('magTitle').innerText = t('magTitle');
-            document.getElementById('magSub').innerText = t('magSub');
-            document.getElementById('magSystole').innerText = t('magSystole');
-            document.getElementById('magIncisura').innerText = t('magIncisura');
-            document.getElementById('magDiastole').innerText = t('magDiastole');
-            document.getElementById('diagRhythmLabel').innerText = t('diagRhythmLabel');
-            document.getElementById('diagStiffLabel').innerText = t('diagStiffLabel');
-            document.getElementById('diagValveLabel').innerText = t('diagValveLabel');
-            document.getElementById('lastEventPrefix').innerText = t('lastEventPrefix');
-            document.getElementById('totalEventsPrefix').innerText = t('totalEventsPrefix');
-
-            // Vitals címkék és skálák
-            document.getElementById('hrSub').innerText = t('hrSub');
-            document.getElementById('hrBrady').innerText = t('hrBrady');
-            document.getElementById('hrNormal').innerText = t('hrNormal');
-            document.getElementById('hrTachy').innerText = t('hrTachy');
-
-            document.getElementById('spo2Sub').innerText = t('spo2Sub');
-            document.getElementById('spo2Hypoxia').innerText = t('spo2Hypoxia');
-            document.getElementById('spo2Optimal').innerText = t('spo2Optimal');
-
-            document.getElementById('piSub').innerText = t('piSub');
-            document.getElementById('piAlarmBadge').innerText = t('piAlarmBadge');
-            document.getElementById('piLimitScale').innerText = t('piLimitScale');
-            document.getElementById('piNormalScale').innerText = t('piNormalScale');
-
-            // Éjszakai idősáv
-            document.getElementById('timelineTitle').innerText = t('timelineTitle');
-            document.getElementById('timelineSpan').innerText = t('timelineSub');
-            document.getElementById('legendNumb').innerText = t('legendNumb');
-            document.getElementById('legendApnea').innerText = t('legendApnea');
-
-            // Riport kártyák címkéi
-            document.getElementById('reportTitle').innerText = t('reportTitle');
-            document.getElementById('statEpisodesLabel').innerText = t('statEpisodesLabel');
-            document.getElementById('statNumbTimeLabel').innerText = t('statNumbTimeLabel');
-            document.getElementById('statApneaLabel').innerText = t('statApneaLabel');
-            document.getElementById('statLowestSpo2Label').innerText = t('statLowestSpo2Label');
-            document.getElementById('statLowestPiLabel').innerText = t('statLowestPiLabel');
-            document.getElementById('statArrhythmiasLabel').innerText = t('statArrhythmiasLabel');
-            document.getElementById('statTimePrefix').innerText = t('timePrefix');
-
-            // Nyelvváltó gomb kinézetének frissítése
-            const elModalTitle = document.getElementById('modalSessionsTitle');
-            if (elModalTitle) elModalTitle.innerText = t('modalSessionsTitle');
-            const elModalClose = document.getElementById('modalClose');
-            if (elModalClose) elModalClose.innerText = t('modalClose');
-            const elTxtSessions = document.getElementById('txtSessions');
-            if (elTxtSessions) elTxtSessions.innerText = t('btnSessions');
-
-            document.getElementById('langEnBadge').className = 'lang-pill' + (currentLang === 'en' ? ' active' : '');
-            document.getElementById('langHuBadge').className = 'lang-pill' + (currentLang === 'hu' ? ' active' : '');
-        }
-
-        function setLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem('viatom_monitor_lang', lang);
-            updateStaticTranslations();
-            renderMagnifierHUD();
-            renderOvernightStrip();
-            if (lastLiveMsg) {
-                renderLiveMsgToUI(lastLiveMsg);
-            }
-        }
-
-        
-        // ==========================================
-        // ANDROID HÍD ÉS VISSZANÉZÉSI TÁMOGATÁS
-        // ==========================================
-        function isAndroidApp() {
-            return typeof window.AndroidBridge !== 'undefined';
-        }
-
-        window.onAndroidTelemetry = function(msg) {
-            if (msg.type === 'history') {
-                overnightHistory = msg.points || [];
-                renderOvernightStrip();
-            } else if (msg.type === 'live') {
-                lastLiveMsg = msg;
-                renderLiveMsgToUI(msg);
-
-                if (msg.ble_connected && msg.finger_in && msg.pi !== null) {
-                    overnightHistory.push({
-                        time: new Date().toTimeString().split(' ')[0],
-                        spo2: msg.spo2,
-                        pulse: msg.pulse,
-                        pi: msg.pi,
-                        is_numb: msg.pi < 0.8,
-                        is_apnea: (msg.spo2 !== null && (msg.spo2 < 91 || (msg.stats && msg.stats.odi > 0 && msg.spo2 <= 94)))
-                    });
-                    if (overnightHistory.length > 3600) overnightHistory.shift();
-                    renderOvernightStrip();
-                }
-            }
-        };
-
-        if (isAndroidApp()) {
-            const btn = document.getElementById('btnSessions');
-            if (btn) btn.style.display = 'flex';
-        }
-
-        function openSessionsModal() {
-            if (!isAndroidApp()) return;
-            const modal = document.getElementById('sessionsModal');
-            const container = document.getElementById('sessionsListContainer');
-            modal.style.display = 'flex';
-            container.innerHTML = '<div style="color:#8b949e; padding:10px;">Betöltés...</div>';
-
-            try {
-                const raw = window.AndroidBridge.listSessions();
-                const list = JSON.parse(raw);
-                if (!list || list.length === 0) {
-                    container.innerHTML = `<div style="color:#8b949e; padding:15px; text-align:center;">${t('modalSessionsEmpty')}</div>`;
-                    return;
-                }
-                let html = '';
-                list.forEach(item => {
-                    const kb = Math.round(item.sizeBytes / 1024);
-                    html += `
-                        <div class="session-card">
-                            <div>
-                                <div style="font-weight:800; font-size:12px; color:#ffffff; font-family:monospace;">${item.fileName}</div>
-                                <div style="font-size:10px; color:#6e7681; margin-top:2px;">${item.formattedDate} · ${kb} KB</div>
-                            </div>
-                            <div style="display:flex; gap:6px;">
-                                <button class="tactile-btn" style="padding:4px 8px; font-size:10px;" onclick="replaySession('${item.fileName}')">👁️ ${t('modalReplay')}</button>
-                                <button class="tactile-btn" style="padding:4px 8px; font-size:10px; color:var(--electric-cyan); border-color:#00e5ff;" onclick="shareSession('${item.fileName}')">📤 ${t('modalShare')}</button>
-                            </div>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            } catch(e) {
-                container.innerHTML = `<div style="color:#ff1744; padding:10px;">Hiba: ${e}</div>`;
-            }
-        }
-
-        function closeSessionsModal() {
-            document.getElementById('sessionsModal').style.display = 'none';
-        }
-
-        function shareSession(fileName) {
-            if (isAndroidApp()) {
-                window.AndroidBridge.shareSession(fileName);
-            }
-        }
-
-        function replaySession(fileName) {
-            if (!isAndroidApp()) return;
-            try {
-                const csv = window.AndroidBridge.loadSessionCsv(fileName);
-                if (!csv) return;
-                const lines = csv.split('\n');
-                let newHistory = [];
-                let numbSecs = 0;
-                let numbEps = 0;
-                let inNumb = false;
-                let lowestSpo2 = 100;
-                let lowestPi = 100.0;
-
-                for (let i = 1; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    if (!line) continue;
-                    const parts = line.split(',');
-                    if (parts.length < 4) continue;
-                    const time = parts[0].split(' ')[1] || parts[0];
-                    const spo2 = parts[1] ? parseInt(parts[1]) : null;
-                    const pulse = parts[2] ? parseInt(parts[2]) : null;
-                    const pi = parts[3] ? parseFloat(parts[3]) : null;
-                    const isNumb = parts[4] && parts[4].indexOf('ZSIBBAD') >= 0;
-                    const isApnea = parts[5] === '1';
-
-                    if (pi !== null) {
-                        if (pi < 0.8) {
-                            numbSecs++;
-                            if (!inNumb) { inNumb = true; numbEps++; }
-                        } else if (pi >= 1.0) { inNumb = false; }
-                        if (pi < lowestPi) lowestPi = pi;
-                    }
-                    if (spo2 !== null && spo2 < lowestSpo2) lowestSpo2 = spo2;
-
-                    newHistory.push({
-                        time: time,
-                        spo2: spo2,
-                        pulse: pulse,
-                        pi: pi,
-                        is_numb: isNumb,
-                        is_apnea: isApnea
-                    });
-                }
-
-                overnightHistory = newHistory;
-                renderOvernightStrip();
-                document.getElementById('statEpisodes').innerText = `${numbEps} ${t('countUnit')}`;
-                document.getElementById('statNumbTime').innerText = `${(numbSecs / 60).toFixed(1)} ${t('unitMin')}`;
-                if (lowestPi < 99) document.getElementById('statLowestPi').innerText = `${lowestPi.toFixed(1)}%`;
-                if (lowestSpo2 < 99) document.getElementById('statLowestSpo2').innerText = `${lowestSpo2}%`;
-
-                closeSessionsModal();
-                alert(`${fileName} visszatöltve az éjszakai sávra!`);
-            } catch(e) {
-                alert('Hiba a visszanézéskor: ' + e);
-            }
-        }
-
-        // ÓRA
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('clockTime').innerText = now.toTimeString().split(' ')[0];
-        }, 1000);
-
-        // ÁLLAPOTOK
-        let ws = null;
-        let isRecording = false;
-        let recordSeconds = 0;
-        let timerInterval = null;
-        let currentHrVal = 70;
-        let currentSpo2Val = 98;
-        let currentPiVal = 0.0;
-        let isBleConnected = false;
-        let isBleScanning = false;
-        let lastLiveMsg = null;
-
-        // DR. HOUSE / INTENZÍV OSZTÁLYOS HANGSZINTETIZÁTOR (Web Audio API)
+        // Web Audio API a keringési és ritmus hangjelzésekhez
         let audioCtx = null;
-        let audioEnabled = true;
-        let flatlineOsc = null;
-        let flatlineGain = null;
-        let isFlatlining = false;
-        let lastBeepTime = 0;
-
-        function initAudio() {
+        function getAudioContext() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-        }
-        // Minden felhasználói kattintás vagy érintés azonnal feloldja a hangot
-        ['click', 'pointerdown', 'touchstart', 'keydown'].forEach(evt => {
-            window.addEventListener(evt, initAudio, { once: false });
-        });
-
-        // 1. PULZUS PITTYENÉS - A HANGMAGASSÁG AZ SPO2-TŐL FÜGG! (IEC 60601-2-61)
-        function playHeartBeep(spo2) {
-            if (!audioEnabled) return;
-            initAudio();
-            if (!audioCtx) return;
-
-            stopFlatline();
-
-            // Szív ikon villogtatása
-            const heart = document.getElementById('heartIcon');
-            if (heart) {
-                heart.style.transform = 'scale(1.35)';
-                setTimeout(() => { heart.style.transform = 'scale(1)'; }, 100);
-            }
-
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-
-            // Kórházi frekvencia: SpO2 100% -> 880 Hz, 90% -> 680 Hz, 80% -> 520 Hz
-            const s = Math.max(75, Math.min(100, spo2 || 98));
-            const freq = 520 + ((s - 75) / 25) * 360;
-
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now);
-
-            gain.gain.setValueAtTime(0.0001, now);
-            gain.gain.exponentialRampToValueAtTime(0.35, now + 0.005);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.075);
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start(now);
-            osc.stop(now + 0.08);
+            return audioCtx;
         }
 
-        // 2. FOLYAMATOS ASYSTOLE SÍPOLÁS (VONAL / CSIPESZ LEVÉVE)
-        function startFlatline() {
-            if (!audioEnabled || isFlatlining) return;
-            initAudio();
-            if (!audioCtx) return;
-
-            isFlatlining = true;
-            const now = audioCtx.currentTime;
-            flatlineOsc = audioCtx.createOscillator();
-            flatlineGain = audioCtx.createGain();
-
-            flatlineOsc.type = 'sine';
-            flatlineOsc.frequency.setValueAtTime(980, now);
-
-            flatlineGain.gain.setValueAtTime(0.0001, now);
-            flatlineGain.gain.exponentialRampToValueAtTime(0.25, now + 0.05);
-
-            flatlineOsc.connect(flatlineGain);
-            flatlineGain.connect(audioCtx.destination);
-
-            flatlineOsc.start(now);
-        }
-
-        function stopFlatline() {
-            if (!isFlatlining || !flatlineOsc) return;
+        function playBeep(freq, duration) {
+            if (!state.audioEnabled) return;
             try {
-                const now = audioCtx.currentTime;
-                flatlineGain.gain.linearRampToValueAtTime(0.0001, now + 0.04);
-                setTimeout(() => {
-                    if (flatlineOsc) {
-                        flatlineOsc.stop();
-                        flatlineOsc.disconnect();
-                        flatlineOsc = null;
-                    }
-                    isFlatlining = false;
-                }, 50);
-            } catch (e) {
-                isFlatlining = false;
-            }
-        }
-
-        // 3. ZSIBBADÁSI RIASZTÁS (IEC 60601-1-8 HÁRMAS CSIPOGÁS)
-        let lastAlarmTime = 0;
-        function playNumbAlarm() {
-            if (!audioEnabled) return;
-            const nowMs = Date.now();
-            if (nowMs - lastAlarmTime < 4500) return;
-            lastAlarmTime = nowMs;
-
-            initAudio();
-            if (!audioCtx) return;
-
-            [0, 0.16, 0.32].forEach(offset => {
-                const t = audioCtx.currentTime + offset;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(960, t);
-
-                gain.gain.setValueAtTime(0.001, t);
-                gain.gain.exponentialRampToValueAtTime(0.35, t + 0.02);
-                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
-
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
                 osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                osc.start(t);
-                osc.stop(t + 0.12);
-            });
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (_) {}
         }
 
         function toggleAudio() {
-            initAudio();
-            audioEnabled = !audioEnabled;
-            const led = document.getElementById('ledAudio');
-            const txt = document.getElementById('txtAudio');
-            if (audioEnabled) {
-                led.className = 'led-halo audio-on';
-                txt.innerText = t('audioOn');
-            } else {
-                led.className = 'led-halo';
-                txt.innerText = t('audioOff');
-                stopFlatline();
-            }
+            state.audioEnabled = !state.audioEnabled;
+            document.getElementById('btnAudioToggle').innerText = state.audioEnabled ? "🔊" : "🔇";
         }
 
         // ==========================================
-        // PLETHYSMOGRAM OSZCILLOSZKÓP CANVAS (HEADROOM AGC - NINCS LEVÁGÁS!)
+        // 60 FPS PPG CANVAS KIRAJZOLÓ (DINAMIKUS AGC)
         // ==========================================
-        const pCanvas = document.getElementById('plethCanvas');
-        const pCtx = pCanvas.getContext('2d');
-        let waveX = 0;
-        let lastWaveY = null;
-        let currentWaveAmp = 0;
+        const canvas = document.getElementById('ppgCanvas');
+        const ctx = canvas.getContext('2d');
+        let waveBuffer = [];
+        let maxBufferPoints = 300;
+        let minAmp = 10;
+        let maxAmp = 100;
 
-        // Dinamikus AGC és simító állapot
-        let agcMin = 25.0;
-        let agcMax = 75.0;
-        let waveSampleHistory = []; // Utolsó 150 minta
-
-        function resizeCanvases() {
-            pCanvas.width = pCanvas.parentElement.clientWidth;
-            pCanvas.height = pCanvas.parentElement.clientHeight;
-            
-            const oCanvas = document.getElementById('overnightCanvas');
-            oCanvas.width = oCanvas.parentElement.clientWidth - 32;
-            oCanvas.height = 140;
-
-            const mCanvas = document.getElementById('magnifierCanvas');
-            mCanvas.width = mCanvas.parentElement.clientWidth;
-            mCanvas.height = 110;
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            maxBufferPoints = Math.floor(rect.width / 2.2);
         }
-        window.addEventListener('resize', resizeCanvases);
-        setTimeout(resizeCanvases, 200);
+        window.addEventListener('resize', resizeCanvas);
+        setTimeout(resizeCanvas, 100);
 
-        function drawPlethWave() {
-            const w = pCanvas.width;
-            const h = pCanvas.height;
-            const centerY = h * 0.52;
-            const sweepWidth = 14;
+        function drawWave() {
+            const width = canvas.width / window.devicePixelRatio;
+            const height = canvas.height / window.devicePixelRatio;
 
-            // Foszfor söprés törlése
-            pCtx.fillStyle = '#000000';
-            pCtx.fillRect(waveX, 0, sweepWidth, h);
+            ctx.clearRect(0, 0, width, height);
 
-            // Kórházi rácsháló vonalak (25 mm/s referencia)
-            pCtx.strokeStyle = 'rgba(0, 50, 70, 0.2)';
-            pCtx.lineWidth = 1;
-            pCtx.beginPath();
-            pCtx.moveTo(waveX, centerY - 80); pCtx.lineTo(waveX + 2, centerY - 80);
-            pCtx.moveTo(waveX, centerY);      pCtx.lineTo(waveX + 2, centerY);
-            pCtx.moveTo(waveX, centerY + 80); pCtx.lineTo(waveX + 2, centerY + 80);
-            pCtx.stroke();
-
-            let targetY = centerY;
-
-            // IGAZI ORVOSI HEADROOM AGC (NINCS TÖBBÉ MATH.MIN/MAX LEVÁGÁS!)
-            if (currentWaveAmp > 0) {
-                // Frissítjük a gördülő min/max értékeket
-                if (currentWaveAmp < agcMin) agcMin = currentWaveAmp;
-                if (currentWaveAmp > agcMax) agcMax = currentWaveAmp;
-
-                // Lassú lebegő adaptáció
-                agcMin += (currentWaveAmp - agcMin) * 0.002;
-                agcMax += (currentWaveAmp - agcMax) * 0.002;
-
-                const span = Math.max(20.0, agcMax - agcMin);
-                
-                // 35% HEADROOM ÉS FOOTROOM ráhagyás, így a hullám SOSEM csapódik a kerethez!
-                const normVal = (currentWaveAmp - agcMin) / span; // 0.0 - 1.0
-                const availableHeight = h * 0.65; // A teljes magasság 65%-a
-                targetY = (h * 0.82) - (normVal * availableHeight);
-            }
-
-            if (lastWaveY === null) lastWaveY = targetY;
-
-            // Élénk klinikai ciánkék pulzushullám ragyogással
-            pCtx.strokeStyle = '#00e5ff';
-            pCtx.lineWidth = 2.4;
-            pCtx.lineCap = 'round';
-            pCtx.shadowColor = '#00e5ff';
-            pCtx.shadowBlur = 8;
-
-            pCtx.beginPath();
-            pCtx.moveTo(waveX - 2, lastWaveY);
-            pCtx.lineTo(waveX, targetY);
-            pCtx.stroke();
-            pCtx.shadowBlur = 0;
-
-            lastWaveY = targetY;
-            waveX += 2.2;
-            if (waveX >= w) {
-                waveX = 0;
-                lastWaveY = null;
-            }
-
-            requestAnimationFrame(drawPlethWave);
-        }
-        requestAnimationFrame(drawPlethWave);
-
-        // ==========================================
-        // 3-CIKLUSOS KLINIKAI MORFOLÓGIA ÉS ARITMIA NAGYÍTÓ (MAGNIFIER HUD)
-        // ==========================================
-        let isMagnifierOpen = true;
-        let lastRecordedBeatTime = 0;
-        let totalArrhythmiaCount = 0;
-        let lastArrhythmiaTypeCode = null;
-        let lastArrhythmiaTime = '--:--:--';
-        let arrhythmiaLatchUntil = 0; // Időbélyeg (ms), ameddig kimerevítve tartjuk a ritmuszavart!
-
-        function toggleMagnifier() {
-            isMagnifierOpen = !isMagnifierOpen;
-            const body = document.getElementById('magnifierBody');
-            const btn = document.getElementById('btnToggleMag');
-            if (isMagnifierOpen) {
-                body.style.display = 'block';
-                btn.innerText = '–';
-            } else {
-                body.style.display = 'none';
-                btn.innerText = '+';
-            }
-        }
-
-        function renderMagnifierHUD() {
-            if (!isMagnifierOpen) return;
-            const mCanvas = document.getElementById('magnifierCanvas');
-            const ctx = mCanvas.getContext('2d');
-            const w = mCanvas.width;
-            const h = mCanvas.height;
-
-            ctx.fillStyle = '#020407';
-            ctx.fillRect(0, 0, w, h);
-
-            // Finom orvosi kalibrációs háló
-            ctx.strokeStyle = '#0d1622';
+            // Orvosi sötétkék/cián rácsháló
+            ctx.strokeStyle = '#0e1620';
             ctx.lineWidth = 1;
-            for (let y = 15; y < h; y += 22) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-            }
-            for (let x = 20; x < w; x += 35) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-            }
-
-            if (waveSampleHistory.length < 35) {
-                ctx.fillStyle = '#4f5d75';
-                ctx.font = '11px monospace';
-                ctx.fillText(t('guidanceScanningTitle'), 15, h / 2 + 4);
-                return;
-            }
-
-            // Normálás és kirajzolás
-            const samples = waveSampleHistory.slice(-90);
-            let minVal = 9999, maxVal = -9999;
-            for (let v of samples) {
-                if (v < minVal) minVal = v;
-                if (v > maxVal) maxVal = v;
-            }
-            const range = Math.max(15, maxVal - minVal);
-
-            let points = [];
-            for (let i = 0; i < samples.length; i++) {
-                const x = (i / (samples.length - 1)) * (w - 30) + 15;
-                const norm = (samples[i] - minVal) / range;
-                const y = h * 0.88 - norm * (h * 0.72);
-                points.push({ x, y, val: samples[i] });
-            }
-
-            // Görbe megrajzolása
-            ctx.strokeStyle = '#00e5ff';
-            ctx.lineWidth = 2.2;
-            ctx.shadowColor = '#00e5ff';
-            ctx.shadowBlur = 6;
-            ctx.beginPath();
-            for (let i = 0; i < points.length; i++) {
-                if (i === 0) ctx.moveTo(points[i].x, points[i].y);
-                else ctx.lineTo(points[i].x, points[i].y);
-            }
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-
-            // Szisztolés csúcsok keresése
-            let peaks = [];
-            for (let i = 2; i < points.length - 2; i++) {
-                if (points[i].val > points[i-1].val && points[i].val > points[i-2].val &&
-                    points[i].val > points[i+1].val && points[i].val > points[i+2].val &&
-                    points[i].val > minVal + (maxVal - minVal) * 0.45) {
-                    peaks.push(i);
-                }
-            }
-
-            // VALÓS IDEJŰ ARITMIA / EXTRASZISZTOLÉ / BIGEMINIA / AFIB DETEKTÁLÁS (RR INTERVALLUM ELEMZÉS!)
-            let detectedExtraIdx = -1;
-            let detectedTypeCode = null;
-
-            if (peaks.length >= 2) {
-                let intervals = [];
-                for (let k = 1; k < peaks.length; k++) {
-                    intervals.push(peaks[k] - peaks[k-1]);
-                }
-                const avgInterval = intervals.reduce((a,b)=>a+b, 0) / intervals.length;
-
-                // 1. Extraszisztolé keresése (korai ütés legalább 26%-kal korábban mint az átlag)
-                for (let k = 0; k < intervals.length; k++) {
-                    if (intervals[k] < avgInterval * 0.74 && intervals[k] > 10) {
-                        detectedExtraIdx = peaks[k + 1];
-                        detectedTypeCode = 'arrhythmiaExtrasystole';
-                        break;
-                    }
-                }
-
-                // 2. Bigeminia keresése (váltakozó rövid-hosszú párok)
-                if (intervals.length >= 3) {
-                    if (intervals[0] < avgInterval * 0.8 && intervals[1] > avgInterval * 1.15 && intervals[2] < avgInterval * 0.8) {
-                        detectedTypeCode = 'arrhythmiaBigeminy';
-                        detectedExtraIdx = peaks[1];
-                    }
-                }
-
-                // 3. Pitvarfibrilláció gyanú (kaotikus variancia)
-                if (intervals.length >= 4) {
-                    let variance = intervals.reduce((acc, val) => acc + Math.pow(val - avgInterval, 2), 0) / intervals.length;
-                    let stdDev = Math.sqrt(variance);
-                    let cv = stdDev / (avgInterval || 1);
-                    if (cv > 0.28) {
-                        detectedTypeCode = 'arrhythmiaAfib';
-                        detectedExtraIdx = peaks[peaks.length - 1];
-                    }
-                }
-            }
-
-            // Ha esemény történt, reteszeljük 12 másodpercig és rögzítjük az eseménysorban!
-            const nowMs = Date.now();
-            if (detectedTypeCode) {
-                if (nowMs - lastRecordedBeatTime > 1600) {
-                    lastRecordedBeatTime = nowMs;
-                    totalArrhythmiaCount++;
-                    lastArrhythmiaTypeCode = detectedTypeCode;
-                    lastArrhythmiaTime = new Date().toTimeString().split(' ')[0];
-                    arrhythmiaLatchUntil = nowMs + 12000; // 12 másodperces reteszelés!
-
-                    const eventRow = document.getElementById('magnifierEventRow');
-                    if (eventRow) eventRow.classList.add('has-alert');
-                    const lastTxt = document.getElementById('lastEventTxt');
-                    if (lastTxt) lastTxt.innerHTML = `<span style="color:#ffb700; font-weight:800;">${t(lastArrhythmiaTypeCode)}</span> <span style="color:#8b949e;">[${lastArrhythmiaTime}]</span>`;
-                    const badge = document.getElementById('extraBeatsBadge');
-                    if (badge) badge.innerText = `${totalArrhythmiaCount} ${t('countUnit')}`;
-                    const statArr = document.getElementById('statArrhythmias');
-                    if (statArr) statArr.innerText = `${totalArrhythmiaCount} ${t('countUnit')}`;
-                }
-            }
-
-            // Anatómiai jelölők rajzolása
-            peaks.slice(-3).forEach(pIdx => {
-                const p = points[pIdx];
-                const isExtra = (pIdx === detectedExtraIdx);
-
-                // 1. Szisztolés csúcs (Ha ritmuseltérés, villogó sárga jelölő!)
-                ctx.fillStyle = isExtra ? '#ffb700' : '#ff1744';
+            const stepY = height / 5;
+            for (let y = stepY; y < height; y += stepY) {
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, isExtra ? 5.5 : 4, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.strokeStyle = isExtra ? 'rgba(255, 183, 0, 0.8)' : 'rgba(255, 23, 68, 0.4)';
-                ctx.setLineDash([2, 2]);
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-                ctx.lineTo(p.x, h);
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
                 ctx.stroke();
-                ctx.setLineDash([]);
-
-                if (isExtra && lastArrhythmiaTypeCode) {
-                    // Címke az extraszisztolé felett
-                    ctx.fillStyle = '#ffb700';
-                    ctx.font = 'bold 9px monospace';
-                    ctx.fillText(`⚡ ${t(lastArrhythmiaTypeCode)}`, p.x - 38, p.y - 10);
-                }
-
-                // 2. Incisura (Aortazáródás) és Diasztolés hullám
-                let notchIdx = -1;
-                for (let k = pIdx + 3; k < Math.min(pIdx + 20, points.length - 2); k++) {
-                    if (points[k].val < points[k-1].val && points[k].val <= points[k+1].val) {
-                        notchIdx = k;
-                        break;
-                    }
-                }
-
-                if (notchIdx > 0 && points[notchIdx]) {
-                    const notch = points[notchIdx];
-                    ctx.fillStyle = '#00e5ff';
-                    ctx.beginPath();
-                    ctx.arc(notch.x, notch.y, 3.5, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    const diastIdx = Math.min(notchIdx + 5, points.length - 1);
-                    const diast = points[diastIdx];
-                    ctx.fillStyle = '#ffb700';
-                    ctx.beginPath();
-                    ctx.arc(diast.x, diast.y, 3.5, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
-
-            // Diagnosztikai kiértékelés frissítése (12 mp retesz visszaszámlálóval!)
-            const diagRhythm = document.getElementById('diagRhythm');
-            const diagStiff = document.getElementById('diagStiffness');
-            const diagValve = document.getElementById('diagValve');
-
-            if (nowMs < arrhythmiaLatchUntil && lastArrhythmiaTypeCode) {
-                const remSec = Math.max(1, Math.ceil((arrhythmiaLatchUntil - nowMs) / 1000));
-                diagRhythm.innerHTML = `<span style="color:#ffb700; font-weight:900;">⚡ ${t(lastArrhythmiaTypeCode)} (${remSec}s)</span>`;
-            } else {
-                diagRhythm.innerHTML = `<span style="color:#00ff55; font-weight:800;">${t('diagRhythmRegular')}</span>`;
-                const eventRow = document.getElementById('magnifierEventRow');
-                if (eventRow) eventRow.classList.remove('has-alert');
+            }
+            const stepX = width / 8;
+            for (let x = stepX; x < width; x += stepX) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
             }
 
-            if (currentPiVal >= 1.5) {
-                diagStiff.innerText = t('diagStiffElastic');
-                diagStiff.style.color = 'var(--neon-green)';
-                diagValve.innerText = t('diagValveNormal');
-                diagValve.style.color = 'var(--electric-cyan)';
-            } else if (currentPiVal >= 0.8) {
-                diagStiff.innerText = t('diagStiffModerate');
-                diagStiff.style.color = 'var(--amber-gold)';
-                diagValve.innerText = t('diagValveVisible');
-                diagValve.style.color = 'var(--amber-gold)';
-            } else {
-                diagStiff.innerText = t('diagStiffReduced');
-                diagStiff.style.color = 'var(--alert-red)';
-                diagValve.innerText = t('diagValveLow');
-                diagValve.style.color = 'var(--alert-red)';
-            }
-        }
-        setInterval(renderMagnifierHUD, 150);
-
-        // ==========================================
-        // ÉJSZAKAI SÁV CANVAS
-        // ==========================================
-        let overnightHistory = [];
-
-        function renderOvernightStrip() {
-            const oCanvas = document.getElementById('overnightCanvas');
-            const ctx = oCanvas.getContext('2d');
-            const w = oCanvas.width;
-            const h = oCanvas.height;
-
-            ctx.fillStyle = '#020305';
-            ctx.fillRect(0, 0, w, h);
-
-            if (overnightHistory.length < 2) {
-                ctx.fillStyle = '#30363d';
-                ctx.font = '12px monospace';
-                ctx.fillText(t('timelineEmpty'), 20, h / 2);
+            if (waveBuffer.length < 2 || !state.fingerIn) {
+                // Vízszintes készenléti vonal
+                ctx.strokeStyle = '#1b2636';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(0, height / 2);
+                ctx.lineTo(width, height / 2);
+                ctx.stroke();
+                requestAnimationFrame(drawWave);
                 return;
             }
 
-            const step = w / Math.max(overnightHistory.length - 1, 60);
-
-            // Zsibbadási és Apnoé zónák sávozása
-            for (let i = 0; i < overnightHistory.length; i++) {
-                const pt = overnightHistory[i];
-                const x = i * step;
-                if (pt.is_numb) {
-                    ctx.fillStyle = 'rgba(255, 23, 68, 0.28)';
-                    ctx.fillRect(x, 0, Math.max(step, 3), h);
-                    ctx.fillStyle = '#ff1744';
-                    ctx.fillRect(x, 0, Math.max(step, 3), 4);
-                } else if (pt.is_apnea) {
-                    ctx.fillStyle = 'rgba(0, 229, 255, 0.22)';
-                    ctx.fillRect(x, 0, Math.max(step, 3), h);
-                    ctx.fillStyle = '#00e5ff';
-                    ctx.fillRect(x, 0, Math.max(step, 3), 3);
-                }
+            // Dinamikus AGC tartománykövetés
+            let localMin = 1000, localMax = -1000;
+            for (let i = 0; i < waveBuffer.length; i++) {
+                const v = waveBuffer[i];
+                if (v < localMin) localMin = v;
+                if (v > localMax) localMax = v;
+            }
+            if (localMax - localMin > 5) {
+                minAmp = minAmp * 0.95 + localMin * 0.05;
+                maxAmp = maxAmp * 0.95 + localMax * 0.05;
             }
 
-            // SpO2 görbe (Ciánkék)
+            const range = Math.max(15, maxAmp - minAmp);
+            const padY = height * 0.20;
+            const effH = height - (padY * 2);
+
+            // Pulzushullám csóva rajzolás
+            ctx.lineWidth = 2.4;
             ctx.strokeStyle = '#00e5ff';
-            ctx.lineWidth = 1.5;
+            ctx.shadowColor = 'rgba(0, 229, 255, 0.6)';
+            ctx.shadowBlur = 8;
             ctx.beginPath();
-            for (let i = 0; i < overnightHistory.length; i++) {
-                const pt = overnightHistory[i];
-                const x = i * step;
-                const spo2 = pt.spo2 || 95;
-                const y = h * 0.45 - ((spo2 - 80) / 20) * (h * 0.4);
-                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
 
-            // PI görbe (Borostyán arany)
-            ctx.strokeStyle = '#ffb700';
-            ctx.lineWidth = 2;
-            ctx.shadowColor = '#ffb700';
-            ctx.shadowBlur = 4;
-            ctx.beginPath();
-            for (let i = 0; i < overnightHistory.length; i++) {
-                const pt = overnightHistory[i];
-                const x = i * step;
-                const pi = pt.pi || 0;
-                const y = h * 0.95 - (Math.min(pi, 10) / 10) * (h * 0.5);
-                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            const dx = width / (maxBufferPoints - 1);
+            const startX = width - (waveBuffer.length * dx);
+
+            for (let i = 0; i < waveBuffer.length; i++) {
+                const norm = (waveBuffer[i] - minAmp) / range;
+                const y = (height - padY) - (norm * effH);
+                const x = startX + (i * dx);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
             }
             ctx.stroke();
             ctx.shadowBlur = 0;
 
-            // 0.8% Zsibbadási küszöbvonal
-            const numbLineY = h * 0.95 - (0.8 / 10) * (h * 0.5);
-            ctx.strokeStyle = 'rgba(255, 23, 68, 0.7)';
-            ctx.setLineDash([4, 4]);
-            ctx.beginPath();
-            ctx.moveTo(0, numbLineY); ctx.lineTo(w, numbLineY);
-            ctx.stroke();
-            ctx.setLineDash([]);
+            requestAnimationFrame(drawWave);
+        }
+        requestAnimationFrame(drawWave);
 
-            ctx.fillStyle = '#ff1744';
-            ctx.font = '10px monospace';
-            ctx.fillText(t('timelineThreshold'), 10, numbLineY - 4);
+        // ==========================================
+        // TELEMETRIA ADATFOGADÁS (ANDROID HÍVÁS)
+        // ==========================================
+        window.onAndroidTelemetry = function(payload) {
+            if (!payload) return;
+
+            // 1. Gyors PPG Hullámpont
+            if (payload.type === 'wave') {
+                waveBuffer.push(payload.wave);
+                if (waveBuffer.length > maxBufferPoints) waveBuffer.shift();
+
+                if (payload.beat) {
+                    triggerHeartbeat();
+                }
+                return;
+            }
+
+            // 2. Másodpercenkénti Teljes Telemetria
+            if (payload.type === 'live') {
+                updateLiveState(payload);
+            }
+        };
+
+        function triggerHeartbeat() {
+            const h = document.getElementById('heartIcon');
+            h.classList.add('beat');
+            setTimeout(() => h.classList.remove('beat'), 120);
+
+            // Pulzussal szinkron orvosi kattanás
+            if (state.spo2 && state.spo2 > 0) {
+                // Pitch a szaturáció függvényében (98% -> 750Hz, 88% -> 450Hz)
+                const freq = 400 + Math.max(0, (state.spo2 - 70) * 12);
+                playBeep(freq, 0.05);
+            }
         }
 
-        // ==========================================
-        // WEBSOCKET ÉLŐ ADATFOGADÁS ÉS RETESZELT CSV KEZELÉS
-        // ==========================================
-        function renderLiveMsgToUI(msg) {
-            isBleConnected = !!msg.ble_connected;
-            isBleScanning = !!msg.ble_scanning;
+        function updateLiveState(data) {
+            state.bleConnected = data.ble_connected;
+            state.bleScanning = data.ble_scanning;
+            state.deviceName = data.device_name || "Nincs kapcsolat";
+            state.deviceAddress = data.device_address || "";
+            state.savedName = data.saved_device_name || "";
+            state.savedMac = data.saved_device_address || "";
+            state.statusMsg = data.ble_status_msg || "";
+            state.spo2 = data.spo2;
+            state.pulse = data.pulse;
+            state.pi = data.pi;
+            state.fingerIn = data.finger_in;
+            state.recording = data.recording;
+            state.recordSeconds = data.record_seconds || 0;
+            state.numbEpisodes = data.numb_episodes || 0;
+            state.numbTotalSeconds = data.numb_total_seconds || 0;
+            state.apneaEpisodes = data.apnea_episodes || 0;
+            state.lowestSpo2 = data.lowest_spo2;
+            state.discoveredDevices = data.discovered_devices || [];
 
+            renderUI();
+        }
+
+        function renderUI() {
+            // Felső státusz pill
+            const badge = document.getElementById('deviceBadge');
             const btnBle = document.getElementById('btnBle');
-            const ledBle = document.getElementById('ledBle');
-            const txtBle = document.getElementById('txtBle');
-            const overlay = document.getElementById('guidanceOverlay');
-            const gTitle = document.getElementById('guidanceTitle');
-            const gSteps = document.getElementById('guidanceSteps');
 
-            // CSV állapotsor és badge kezelése
-            const csvBadge = document.getElementById('csvBadge');
-            const csvDot = document.getElementById('csvBadgeDot');
-            const csvTxt = document.getElementById('csvBadgeTxt');
-            const csvFooter = document.getElementById('csvStatusBadge');
-
-            if (msg.recording) {
-                csvBadge.className = 'csv-badge active';
-                csvDot.style.background = 'var(--alert-red)';
-                csvTxt.innerText = `${t('csvRecording')} (${formatSeconds(msg.record_seconds)})`;
-                csvFooter.innerText = t('csvFooterActive');
-                csvFooter.style.color = 'var(--alert-red)';
+            if (state.bleConnected) {
+                badge.className = "device-pill connected";
+                badge.innerText = `● ${state.deviceName}`;
+                btnBle.className = "action-btn btn-ble connected";
+                btnBle.innerText = "✓ Csatlakoztatva";
+            } else if (state.bleScanning) {
+                badge.className = "device-pill scanning";
+                badge.innerText = "◉ Keresés...";
+                btnBle.className = "action-btn btn-ble scanning";
+                btnBle.innerText = "Keresés...";
             } else {
-                csvBadge.className = 'csv-badge';
-                csvDot.style.background = '#6e7681';
-                csvTxt.innerText = t('csvStandby');
-                csvFooter.innerText = t('csvFooterInactive');
-                csvFooter.style.color = '#8b949e';
+                badge.className = "device-pill";
+                badge.innerText = state.savedName ? `○ ${state.savedName}` : "○ Nincs kapcsolat";
+                btnBle.className = "action-btn btn-ble";
+                btnBle.innerText = "📡 Csatlakozás";
             }
 
-            // KIZÁRÓLAG AKKOR MUTATUNK SZÁMOKAT, HA CSATLAKOZVA VAN ÉS UJJON VAN!
-            if (!msg.ble_connected || !msg.finger_in) {
-                document.getElementById('valHr').innerText = '--';
-                document.getElementById('valSpo2').innerText = '--';
-                document.getElementById('valPi').innerText = '--';
-                document.getElementById('boxPi').classList.remove('alarm');
-                document.getElementById('hrMarker').style.left = '50%';
-                document.getElementById('spo2Marker').style.left = '90%';
-                document.getElementById('piMarker').style.left = '0%';
-                currentWaveAmp = 0;
-                currentPiVal = 0.0;
-
-                if (msg.ble_connected && !msg.finger_in) {
-                    startFlatline();
-                } else {
-                    stopFlatline();
-                }
+            // Ujj státusz
+            const fb = document.getElementById('fingerBanner');
+            if (state.bleConnected && state.fingerIn) {
+                fb.className = "status-banner finger-in";
+                fb.innerText = "✓ UJJ A CSIPESZBEN • ÉLŐ TELEMETRIA";
+            } else if (state.bleConnected && !state.fingerIn) {
+                fb.className = "status-banner finger-out";
+                fb.innerText = "⚠️ CSIPESZ LEVÉVE • HELYEZZE AZ UJJÁRA";
             } else {
-                // ÉRVÉNYES ÉLŐ ADATFOLYAM
-                stopFlatline();
-                currentWaveAmp = msg.wave;
-                currentHrVal = msg.pulse || 70;
-                currentSpo2Val = msg.spo2 || 98;
-                currentPiVal = msg.pi || 0.0;
-
-                // Hullámminta a morfológiai pufferhez
-                if (currentWaveAmp > 0) {
-                    waveSampleHistory.push(currentWaveAmp);
-                    if (waveSampleHistory.length > 150) waveSampleHistory.shift();
-                }
-
-                // Hardveres szívhang trigger
-                if (msg.beat && (Date.now() - lastBeepTime > 300)) {
-                    lastBeepTime = Date.now();
-                    playHeartBeep(currentSpo2Val);
-                }
-
-                // HR kijelzés és Gauge mutató
-                document.getElementById('valHr').innerText = msg.pulse !== null ? msg.pulse : '--';
-                if (msg.pulse !== null) {
-                    // 40 - 140 bpm skála
-                    const hrPercent = Math.max(0, Math.min(100, ((msg.pulse - 40) / 100) * 100));
-                    document.getElementById('hrMarker').style.left = hrPercent + '%';
-                }
-
-                // SpO2 kijelzés és Gauge mutató
-                document.getElementById('valSpo2').innerText = msg.spo2 !== null ? msg.spo2 : '--';
-                if (msg.spo2 !== null) {
-                    // 85 - 100% skála
-                    const spo2Percent = Math.max(0, Math.min(100, ((msg.spo2 - 85) / 15) * 100));
-                    document.getElementById('spo2Marker').style.left = spo2Percent + '%';
-                }
-                
-                // PI kijelzés és Gauge mutató
-                const piBox = document.getElementById('boxPi');
-                const piMarker = document.getElementById('piMarker');
-
-                if (msg.pi !== null) {
-                    document.getElementById('valPi').innerText = msg.pi.toFixed(1);
-
-                    // 0 - 10% skála (0.8% = 8%)
-                    const piPercent = Math.max(0, Math.min(100, (msg.pi / 10.0) * 100));
-                    piMarker.style.left = piPercent + '%';
-
-                    if (msg.pi < 0.8) {
-                        piBox.classList.add('alarm');
-                        playNumbAlarm();
-                    } else {
-                        piBox.classList.remove('alarm');
-                    }
-                } else {
-                    document.getElementById('valPi').innerText = '--';
-                    piBox.classList.remove('alarm');
-                    piMarker.style.left = '0%';
-                }
+                fb.className = "status-banner finger-out";
+                fb.innerText = state.statusMsg || "CSIPESZ NINCS CSATLAKOZTATVA";
             }
 
-            // Bluetooth és kapcsolati státusz
-            if (msg.ble_connected) {
-                btnBle.className = 'tactile-btn active-ble';
-                ledBle.className = 'led-halo connected';
-                txtBle.innerText = t('bleConnected');
-                document.getElementById('deviceStatusText').innerText = (t('deviceStandby').split(':')[0]) + ': ' + msg.device_name;
-                
-                if (msg.finger_in) {
-                    overlay.style.display = 'none';
-                } else {
-                    overlay.style.display = 'block';
-                    overlay.className = 'guidance-overlay';
-                    gTitle.innerText = t('guidanceFingerOffTitle');
-                    gSteps.innerHTML = t('guidanceFingerOffSteps');
-                }
-            } else if (msg.ble_scanning) {
-                btnBle.className = 'tactile-btn';
-                ledBle.className = 'led-halo scanning';
-                txtBle.innerText = t('bleScanning');
-                document.getElementById('deviceStatusText').innerText = t('deviceScanning');
-                
-                overlay.style.display = 'block';
-                overlay.className = 'guidance-overlay scanning-mode';
-                gTitle.innerText = t('guidanceScanningTitle');
-                gSteps.innerHTML = t('guidanceScanningSteps');
+            // Nagy orvosi számok
+            document.getElementById('valSpo2').innerText = state.spo2 !== null ? state.spo2 : "--";
+            document.getElementById('valPulse').innerText = state.pulse !== null ? state.pulse : "--";
+            document.getElementById('valPi').innerText = state.pi !== null ? state.pi.toFixed(1) : "--";
+
+            // Zsibbadás riasztás (<0.8%)
+            const cardPi = document.getElementById('cardPi');
+            if (state.fingerIn && state.pi !== null && state.pi < 0.8) {
+                cardPi.classList.add('numb-alert');
+                document.getElementById('unitPi').innerText = "⚠️ ZSIBBADÁS!";
             } else {
-                btnBle.className = 'tactile-btn';
-                ledBle.className = 'led-halo';
-                txtBle.innerText = t('bleIdle');
-                document.getElementById('deviceStatusText').innerText = msg.ble_status_msg || t('deviceStandby');
-                
-                overlay.style.display = 'block';
-                overlay.className = 'guidance-overlay';
-                gTitle.innerText = t('guidanceDisconnectedTitle');
-                gSteps.innerHTML = t('guidanceDisconnectedSteps');
+                cardPi.classList.remove('numb-alert');
+                document.getElementById('unitPi').innerText = "% INDEX";
             }
 
-            // Éjszakai statisztikák
-            if (msg.stats) {
-                document.getElementById('statEpisodes').innerText = `${msg.stats.episodes} ${t('countUnit')}`;
-                document.getElementById('statNumbTime').innerText = `${msg.stats.total_numb_minutes} ${t('unitMin')}`;
-                document.getElementById('statLowestPi').innerText = msg.stats.lowest_pi ? (msg.stats.lowest_pi + '% (' + msg.stats.lowest_pi_time + ')') : '--';
-                
-                const elApnea = document.getElementById('statApnea');
-                if (elApnea) {
-                    const sev = msg.stats.apnea_severity === 'NORMÁL' ? t('apneaNormal') : (msg.stats.apnea_severity || t('apneaNormal'));
-                    elApnea.innerText = (msg.stats.odi !== undefined ? msg.stats.odi : '0.0') + ' / h (' + sev + ')';
-                }
-                
-                const elLowestSpo2 = document.getElementById('statLowestSpo2');
-                if (elLowestSpo2) elLowestSpo2.innerText = msg.stats.lowest_spo2 ? (msg.stats.lowest_spo2 + '% (' + msg.stats.lowest_spo2_time + ')') : '--';
-                
-                const elArr = document.getElementById('statArrhythmias');
-                if (elArr) elArr.innerText = `${totalArrhythmiaCount} ${t('countUnit')}`;
+            // Rögzítés gomb
+            const btnRec = document.getElementById('btnRec');
+            if (state.recording) {
+                btnRec.className = "action-btn btn-rec recording";
+                btnRec.innerText = "⏹ Leállítás";
+            } else {
+                btnRec.className = "action-btn btn-rec";
+                btnRec.innerText = "⏺ Rögzítés";
             }
-        }
 
-        function connectWs() {
-            ws = new WebSocket('ws://' + window.location.host + '/ws');
+            // Időmérő és statisztikák
+            document.getElementById('recordTimer').innerText = formatSeconds(state.recordSeconds);
 
-            ws.onmessage = (event) => {
-                const msg = JSON.parse(event.data);
+            const hours = Math.max(1, state.recordSeconds / 3600);
+            const odi = (state.apneaEpisodes / hours).toFixed(1);
+            document.getElementById('statOdi').innerText = `${odi} / h`;
+            document.getElementById('statApneaDrops').innerText = `${state.apneaEpisodes} db`;
+            document.getElementById('statNumb').innerText = `${state.numbEpisodes} db (${state.numbTotalSeconds} mp)`;
+            document.getElementById('statMinSpo2').innerText = state.lowestSpo2 ? `${state.lowestSpo2} %` : "-- %";
 
-                if (msg.type === 'history') {
-                    overnightHistory = msg.points || [];
-                    renderOvernightStrip();
-                } else if (msg.type === 'live') {
-                    lastLiveMsg = msg;
-                    renderLiveMsgToUI(msg);
-
-                    // Éjszakai idősávhoz rögzítés
-                    if (msg.ble_connected && msg.finger_in && msg.pi !== null) {
-                        overnightHistory.push({
-                            time: new Date().toTimeString().split(' ')[0],
-                            spo2: msg.spo2,
-                            pulse: msg.pulse,
-                            pi: msg.pi,
-                            is_numb: msg.pi < 0.8,
-                            is_apnea: (msg.spo2 !== null && (msg.spo2 < 91 || (msg.stats && msg.stats.odi > 0 && msg.spo2 <= 94)))
-                        });
-                        if (overnightHistory.length > 3600) overnightHistory.shift();
-                        renderOvernightStrip();
-                    }
-                }
-            };
-
-            ws.onerror = () => {
-                try { ws.close(); } catch(e) {}
-            };
-
-            ws.onclose = () => {
-                setTimeout(connectWs, 1000);
-            };
-        }
-        if (!isAndroidApp()) {
-            connectWs();
-        }
-
-        // Biztonsági újrapróbálkozó timer, ha a websocket valamiért elakadna
-        setInterval(() => {
-            if (!ws || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
-                if (!isAndroidApp()) {
-            connectWs();
-        }
+            // Mentett csipesz gomb a modalban
+            const btnForget = document.getElementById('btnForgetCached');
+            if (state.savedMac) {
+                btnForget.style.display = 'block';
+                btnForget.innerText = `🗑️ Mentett csipesz (${state.savedName || state.savedMac}) elfelejtése`;
+            } else {
+                btnForget.style.display = 'none';
             }
-        }, 2000);
 
-        function formatSeconds(secs) {
-            const h = String(Math.floor(secs / 3600)).padStart(2, '0');
-            const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
-            const s = String(secs % 60).padStart(2, '0');
+            // Frissítsük a modalt, ha nyitva van
+            renderDiscoveredList();
+        }
+
+        function formatSeconds(sec) {
+            const h = Math.floor(sec / 3600).toString().padStart(2, '0');
+            const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+            const s = (sec % 60).toString().padStart(2, '0');
             return `${h}:${m}:${s}`;
         }
 
         // ==========================================
-        // GOMBOK KEZELÉSE
+        // GOMBOK ÉS VEZÉRLÉS
         // ==========================================
-        async function toggleBle() {
-            initAudio();
-            isBleScanning = true;
-            const txtBle = document.getElementById('txtBle');
-            const ledBle = document.getElementById('ledBle');
-            const overlay = document.getElementById('guidanceOverlay');
-            const gTitle = document.getElementById('guidanceTitle');
-            const gSteps = document.getElementById('guidanceSteps');
-
-            txtBle.innerText = t('bleScanning');
-            ledBle.className = 'led-halo scanning';
-            overlay.style.display = 'block';
-            overlay.className = 'guidance-overlay scanning-mode';
-            gTitle.innerText = t('guidanceScanningTitle');
-            gSteps.innerHTML = t('guidanceScanningSteps');
-
-            if (isAndroidApp()) {
+        function handleBleToggle() {
+            if (window.AndroidBridge && window.AndroidBridge.toggleBle) {
                 window.AndroidBridge.toggleBle();
-            } else {
-                await fetch('/api/ble/toggle', { method: 'POST' });
             }
         }
 
-        async function toggleRec() {
-            initAudio();
-            if (isAndroidApp()) {
-                const raw = window.AndroidBridge.toggleRec();
-                const data = JSON.parse(raw);
-                isRecording = data.recording;
-            } else {
-                const resp = await fetch('/api/record/toggle', { method: 'POST' });
-                const data = await resp.json();
-                isRecording = data.recording;
-            }
-            
-            const ledRec = document.getElementById('ledRec');
-            const txtRec = document.getElementById('txtRec');
-            const timer = document.getElementById('recTimer');
-
-            if (isRecording) {
-                ledRec.className = 'led-halo recording';
-                txtRec.innerText = t('recActive');
-                timer.style.display = 'inline';
-
-                recordSeconds = 0;
-                clearInterval(timerInterval);
-                timerInterval = setInterval(() => {
-                    recordSeconds++;
-                    timer.innerText = formatSeconds(recordSeconds);
-                    const hrs = String(Math.floor(recordSeconds / 3600)).padStart(2, '0');
-                    const mins = String(Math.floor((recordSeconds % 3600) / 60)).padStart(2, '0');
-                    document.getElementById('statDuration').innerText = `${hrs}:${mins}`;
-                }, 1000);
-            } else {
-                ledRec.className = 'led-halo';
-                txtRec.innerText = t('recIdle');
-                timer.style.display = 'none';
-                clearInterval(timerInterval);
-                alert(t('recAlertEnded', {
-                    mins: Math.floor(recordSeconds / 60),
-                    eps: document.getElementById('statEpisodes').innerText
-                }));
+        function handleRecToggle() {
+            if (window.AndroidBridge && window.AndroidBridge.toggleRec) {
+                window.AndroidBridge.toggleRec();
             }
         }
 
-        async function setSim(mode) {
-            initAudio();
-            document.querySelectorAll('.sim-btn').forEach(b => b.classList.remove('active', 'numb-active'));
-            if (mode === 'normal') document.getElementById('simNorm').classList.add('active');
-            if (mode === 'numb') document.getElementById('simNumb').classList.add('numb-active');
-            if (mode === 'off') document.getElementById('simOff').classList.add('active');
-            await fetch(`/api/simulate?mode=${mode}`, { method: 'POST' });
+        function handleShareCsv() {
+            if (window.AndroidBridge && window.AndroidBridge.shareLatestOrCurrentCsv) {
+                window.AndroidBridge.shareLatestOrCurrentCsv();
+            }
         }
 
-        // Kezdő fordítás aktiválása
-        updateStaticTranslations();
+        // ==========================================
+        // ESZKÖZVÁLASZTÓ MODAL
+        // ==========================================
+        function openDevicePicker() {
+            document.getElementById('deviceModal').classList.add('open');
+            triggerScan();
+        }
+
+        function closeDevicePicker() {
+            document.getElementById('deviceModal').classList.remove('open');
+        }
+
+        function closeDevicePickerOnOverlay(e) {
+            if (e.target.id === 'deviceModal') {
+                closeDevicePicker();
+            }
+        }
+
+        function triggerScan() {
+            if (window.AndroidBridge && window.AndroidBridge.startScan) {
+                window.AndroidBridge.startScan();
+            }
+            renderDiscoveredList();
+        }
+
+        function handleForgetDevice() {
+            if (window.AndroidBridge && window.AndroidBridge.forgetDevice) {
+                window.AndroidBridge.forgetDevice();
+            }
+            closeDevicePicker();
+        }
+
+        function selectDevice(mac, name) {
+            if (window.AndroidBridge && window.AndroidBridge.connectDevice) {
+                window.AndroidBridge.connectDevice(mac);
+            }
+            closeDevicePicker();
+        }
+
+        function renderDiscoveredList() {
+            const container = document.getElementById('deviceList');
+            const list = state.discoveredDevices || [];
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--text-dim); padding: 24px; font-size: 13px;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">📡</div>
+                        Keresés folyamatban...<br>
+                        Helyezze fel a mérőcsipeszt az ujjára!
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            list.forEach(dev => {
+                const isCurrent = state.deviceAddress === dev.address;
+                html += `
+                    <div class="device-item" onclick="selectDevice('${dev.address}', '${dev.name}')">
+                        <div>
+                            <div class="device-name">${escapeHtml(dev.name)} ${isCurrent ? '✓' : ''}</div>
+                            <div class="device-sub">${dev.address}</div>
+                        </div>
+                        <div class="device-rssi">${dev.rssi} dBm</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            return (text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
     </script>
-
-    <!-- MÉRÉSI NAPLÓK / VISSZANÉZÉS MODAL -->
-    <div id="sessionsModal" class="sessions-modal" style="display: none;">
-        <div class="sessions-modal-box">
-            <div class="sessions-modal-header">
-                <span id="modalSessionsTitle">📁 RECORDED SESSIONS (CSV LOGS)</span>
-                <button class="sessions-modal-close" onclick="closeSessionsModal()">✕</button>
-            </div>
-            <div id="sessionsListContainer" class="sessions-list">
-                <!-- Javascript tölti fel -->
-            </div>
-            <div style="text-align: right; margin-top: 12px; border-top: 1px solid #161f2c; padding-top: 10px;">
-                <button class="tactile-btn" style="display: inline-flex;" onclick="closeSessionsModal()" id="modalClose">Close</button>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
